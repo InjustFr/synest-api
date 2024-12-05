@@ -1,0 +1,10 @@
+App\Core\Domain\Entity\Message:
+  attributes:
+    id:
+      groups: ['message', 'channel']
+    content:
+      groups: ['message', 'channel']
+    username:
+      groups: ['message', 'channel']
+    channel:
+      groups: ['message']

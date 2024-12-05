@@ -1,0 +1,8 @@
+App\Core\Domain\Entity\Channel:
+  attributes:
+    id:
+      groups: ['channel', 'message']
+    name:
+      groups: ['channel']
+    messages:
+      groups: ['channel']
