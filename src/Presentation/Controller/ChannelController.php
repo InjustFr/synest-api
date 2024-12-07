@@ -5,6 +5,7 @@ namespace App\Presentation\Controller;
 use App\Core\Application\Repository\ChannelRepositoryInterface;
 use App\Core\Domain\DTO\ChannelDTO;
 use App\Core\Domain\Entity\Channel;
+use App\Core\Domain\Event\ChannelDeletedEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -42,6 +43,7 @@ final class ChannelController extends AbstractController {
         ChannelRepositoryInterface $channelRepository,
     ) {
         $channelRepository->delete($channel);
+        $channel->record(new ChannelDeletedEvent($channel->id));
 
         return new JsonResponse([], status: Response::HTTP_NO_CONTENT);
     }

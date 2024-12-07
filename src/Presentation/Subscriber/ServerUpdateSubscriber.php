@@ -2,6 +2,8 @@
 
 namespace App\Presentation\Subscriber;
 
+use App\Core\Domain\Event\ChannelCreatedEvent;
+use App\Core\Domain\Event\ChannelDeletedEvent;
 use App\Core\Domain\Event\MessageCreatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Mercure\HubInterface;
@@ -15,7 +17,9 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface {
     public static function getSubscribedEvents()
     {
         return [
-            MessageCreatedEvent::class => ['onMessageCreated', 10]
+            MessageCreatedEvent::class => ['onMessageCreated', 10],
+            ChannelCreatedEvent::class => ['onChannelCreated', 10],
+            ChannelDeletedEvent::class => ['onChannelDeleted', 10]
         ];
     }
 
@@ -25,6 +29,30 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface {
             json_encode([
                 'type' => 'message_created',
                 'data' => $messageCreatedEvent
+            ])
+        );
+        
+        $this->hub->publish($update);
+    }
+
+    public function onChannelCreated(ChannelCreatedEvent $channelCreatedEvent) {
+        $update = new Update(
+            '/server',
+            json_encode([
+                'type' => 'channel_created',
+                'data' => $channelCreatedEvent
+            ])
+        );
+        
+        $this->hub->publish($update);
+    }
+
+    public function onChannelDeleted(ChannelDeletedEvent $channelDeletedEvent) {
+        $update = new Update(
+            '/server',
+            json_encode([
+                'type' => 'channel_deleted',
+                'data' => $channelDeletedEvent
             ])
         );
         
