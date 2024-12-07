@@ -2,7 +2,8 @@
 
 namespace App\Core\Application;
 
-interface TransactionServiceInterface {
+interface TransactionServiceInterface
+{
     public function start(): void;
 
     public function commit(): void;

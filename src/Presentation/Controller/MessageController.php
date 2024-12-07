@@ -5,9 +5,7 @@ namespace App\Presentation\Controller;
 use App\Core\Application\Repository\ChannelRepositoryInterface;
 use App\Core\Application\Repository\MessageRepositoryInterface;
 use App\Core\Domain\DTO\MessageDTO;
-use App\Core\Domain\Entity\Channel;
 use App\Core\Domain\Entity\Message;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +14,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/messages', name: 'api_messages_')]
-final class MessageController extends AbstractController {
+final class MessageController extends AbstractController
+{
     #[Route('/', name: 'list', methods: ['GET'])]
     public function listMessage(
         MessageRepositoryInterface $messageRepository,

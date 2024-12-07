@@ -2,7 +2,8 @@
 
 namespace App\Core\Domain\Shared;
 
-interface ContainsEventsInterface {
+interface ContainsEventsInterface
+{
     /**
      * @return EventInterface[]
      */

@@ -7,7 +7,6 @@ use App\Core\Domain\Shared\EventInterface;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
@@ -15,7 +14,6 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -24,7 +22,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 #[AsDoctrineListener(event: Events::preRemove, priority: 500, connection: 'default')]
 #[AsDoctrineListener(event: Events::preFlush, priority: 500, connection: 'default')]
 #[AsDoctrineListener(event: Events::postFlush, priority: 500, connection: 'default')]
-final class DomainEventSubscriber {
+final class DomainEventSubscriber
+{
     /**
      * @var ArrayCollection<array-key, ContainsEventsInterface>
      */

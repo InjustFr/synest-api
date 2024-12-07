@@ -2,7 +2,8 @@
 
 namespace App\Core\Domain\Shared;
 
-interface RecordsEventsInterface {
+interface RecordsEventsInterface
+{
     /**
      * @return EventInterface[]
      */

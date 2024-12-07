@@ -3,12 +3,13 @@
 namespace App\Infrastructure\Doctrine\Repository;
 
 use App\Core\Application\Repository\MessageRepositoryInterface;
-use Symfony\Component\Uid\Ulid;
 use App\Core\Domain\Entity\Message;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use Symfony\Component\Uid\Ulid;
 
-final class DoctrineMessageRepository implements MessageRepositoryInterface {
+final class DoctrineMessageRepository implements MessageRepositoryInterface
+{
     private ObjectRepository $objectRepository;
 
     public function __construct(private EntityManagerInterface $entityManager)

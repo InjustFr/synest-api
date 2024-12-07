@@ -5,7 +5,8 @@ namespace App\Infrastructure\Doctrine;
 use App\Core\Application\TransactionServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class DoctrineTransactionService implements TransactionServiceInterface {
+final class DoctrineTransactionService implements TransactionServiceInterface
+{
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }
@@ -18,7 +19,7 @@ final class DoctrineTransactionService implements TransactionServiceInterface {
     public function commit(): void
     {
         $this->entityManager->flush();
-        if($this->entityManager->getConnection()->isTransactionActive()) {
+        if ($this->entityManager->getConnection()->isTransactionActive()) {
             $this->entityManager->getConnection()->commit();
         }
     }

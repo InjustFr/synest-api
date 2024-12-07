@@ -2,7 +2,8 @@
 
 namespace App\Core\Domain\Shared;
 
-trait PrivateEventRecorderTrait {
+trait PrivateEventRecorderTrait
+{
     /**
      * @var EventInterface[]
      */
@@ -11,15 +12,18 @@ trait PrivateEventRecorderTrait {
     /**
      * @return EventInterface[]
      */
-    public function getRecordedEvents(): array {
+    public function getRecordedEvents(): array
+    {
         return $this->events;
     }
 
-    public function clearRecordedEvents(): void {
+    public function clearRecordedEvents(): void
+    {
         $this->events = [];
     }
 
-    public function record(EventInterface $event): void {
+    public function record(EventInterface $event): void
+    {
         $this->events[] = $event;
     }
 }

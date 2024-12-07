@@ -9,9 +9,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
-final class ServerUpdateSubscriber implements EventSubscriberInterface {
-    public function __construct(private HubInterface $hub) {
-
+final class ServerUpdateSubscriber implements EventSubscriberInterface
+{
+    public function __construct(private HubInterface $hub)
+    {
     }
 
     public static function getSubscribedEvents()
@@ -19,43 +20,46 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface {
         return [
             MessageCreatedEvent::class => ['onMessageCreated', 10],
             ChannelCreatedEvent::class => ['onChannelCreated', 10],
-            ChannelDeletedEvent::class => ['onChannelDeleted', 10]
+            ChannelDeletedEvent::class => ['onChannelDeleted', 10],
         ];
     }
 
-    public function onMessageCreated(MessageCreatedEvent $messageCreatedEvent) {
+    public function onMessageCreated(MessageCreatedEvent $messageCreatedEvent)
+    {
         $update = new Update(
             '/server',
             json_encode([
                 'type' => 'message_created',
-                'data' => $messageCreatedEvent
+                'data' => $messageCreatedEvent,
             ])
         );
-        
+
         $this->hub->publish($update);
     }
 
-    public function onChannelCreated(ChannelCreatedEvent $channelCreatedEvent) {
+    public function onChannelCreated(ChannelCreatedEvent $channelCreatedEvent)
+    {
         $update = new Update(
             '/server',
             json_encode([
                 'type' => 'channel_created',
-                'data' => $channelCreatedEvent
+                'data' => $channelCreatedEvent,
             ])
         );
-        
+
         $this->hub->publish($update);
     }
 
-    public function onChannelDeleted(ChannelDeletedEvent $channelDeletedEvent) {
+    public function onChannelDeleted(ChannelDeletedEvent $channelDeletedEvent)
+    {
         $update = new Update(
             '/server',
             json_encode([
                 'type' => 'channel_deleted',
-                'data' => $channelDeletedEvent
+                'data' => $channelDeletedEvent,
             ])
         );
-        
+
         $this->hub->publish($update);
     }
 }

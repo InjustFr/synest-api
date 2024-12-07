@@ -5,7 +5,8 @@ namespace App\Core\Application\Repository;
 use App\Core\Domain\Entity\Channel;
 use Symfony\Component\Uid\Ulid;
 
-interface ChannelRepositoryInterface {
+interface ChannelRepositoryInterface
+{
     public function list(): array;
 
     public function get(Ulid $id): Channel;

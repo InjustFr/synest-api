@@ -3,12 +3,13 @@
 namespace App\Infrastructure\Doctrine\Repository;
 
 use App\Core\Application\Repository\ChannelRepositoryInterface;
-use Symfony\Component\Uid\Ulid;
 use App\Core\Domain\Entity\Channel;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use Symfony\Component\Uid\Ulid;
 
-final class DoctrineChannelRepository implements ChannelRepositoryInterface {
+final class DoctrineChannelRepository implements ChannelRepositoryInterface
+{
     private ObjectRepository $objectRepository;
 
     public function __construct(private EntityManagerInterface $entityManager)
@@ -28,7 +29,7 @@ final class DoctrineChannelRepository implements ChannelRepositoryInterface {
     {
         $channel = $this->objectRepository->find($id);
 
-        if(!$channel) {
+        if (!$channel) {
             throw new \InvalidArgumentException('ULID '.$id.' is not a valid channel ULID');
         }
 
