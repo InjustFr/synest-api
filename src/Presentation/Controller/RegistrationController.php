@@ -14,8 +14,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class RegistrationController extends AbstractController
 {
-    #[Route('/registration', name: 'api_registration')]
-    public function registrateUser(
+    #[Route('/register', name: 'api_register')]
+    public function register(
         #[MapRequestPayload]
         UserDTO $userDTO,
         UserPasswordHasherInterface $userPasswordHasher,

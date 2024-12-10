@@ -1,0 +1,6 @@
+App\Core\Domain\Entity\User:
+  attributes:
+    username: 
+      groups: ['user']
+    email: 
+      groups: ['user']
