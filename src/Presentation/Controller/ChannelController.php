@@ -31,7 +31,7 @@ final class ChannelController extends AbstractController
         ChannelRepositoryInterface $channelRepository,
         SerializerInterface $serializer
     ): Response {
-        $channel = Channel::create($channelDTO->name);
+        $channel = Channel::create($channelDTO->name, $channelDTO->type);
         $channelRepository->save($channel);
 
         return new JsonResponse($serializer->serialize($channel, 'json', ['groups' => 'channel']), status: Response::HTTP_CREATED, json: true);

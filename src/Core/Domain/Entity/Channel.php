@@ -3,6 +3,7 @@
 namespace App\Core\Domain\Entity;
 
 use App\Core\Domain\Event\ChannelCreatedEvent;
+use App\Core\Domain\Shared\ChannelType;
 use App\Core\Domain\Shared\ContainsEventsInterface;
 use App\Core\Domain\Shared\PrivateEventRecorderTrait;
 use App\Core\Domain\Shared\RecordsEventsInterface;
@@ -29,14 +30,19 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface {
         }
     }
 
+    #[ORM\Column(type: 'string', enumType: ChannelType::class)]
+    public ChannelType $type;
+
     #[ORM\OneToMany(Message::class, mappedBy: 'channel', cascade: ['remove', 'persist'], orphanRemoval: true)]
     private Collection $messages;
 
     private function __construct(
-        string $name
+        string $name,
+        ChannelType $type
     ) {
         $this->id = new Ulid();
         $this->name = $name;
+        $this->type = $type;
 
         $this->messages = new ArrayCollection();
     }
@@ -56,10 +62,10 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface {
         $this->messages->removeElement($message);
     }
 
-    public static function create(string $name): self {
-        $self = new self($name);
+    public static function create(string $name, ChannelType $type): self {
+        $self = new self($name, $type);
 
-        $self->record(new ChannelCreatedEvent($self->id, $self->name));
+        $self->record(new ChannelCreatedEvent($self->id, $self->name, $self->type));
 
         return $self;
     }

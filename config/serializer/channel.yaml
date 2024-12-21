@@ -4,5 +4,7 @@ App\Core\Domain\Entity\Channel:
       groups: ['channel', 'message']
     name:
       groups: ['channel']
+    type:
+      groups: ['channel']
     messages:
       groups: ['channel']
