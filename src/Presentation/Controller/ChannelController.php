@@ -19,7 +19,7 @@ final class ChannelController extends AbstractController
     #[Route('', name: 'list', methods: ['GET'])]
     public function listChannel(
         ChannelRepositoryInterface $channelRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
     ): Response {
         return new JsonResponse($serializer->serialize($channelRepository->list(), 'json', ['groups' => 'channel']), status: Response::HTTP_OK, json: true);
     }
@@ -29,7 +29,7 @@ final class ChannelController extends AbstractController
         #[MapRequestPayload]
         ChannelDTO $channelDTO,
         ChannelRepositoryInterface $channelRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
     ): Response {
         $channel = Channel::create($channelDTO->name, $channelDTO->type);
         $channelRepository->save($channel);
@@ -41,9 +41,9 @@ final class ChannelController extends AbstractController
     public function removeChannel(
         Channel $channel,
         ChannelRepositoryInterface $channelRepository,
-    ) {
+    ): Response {
         $channelRepository->delete($channel);
-        $channel->record(new ChannelDeletedEvent($channel->id));
+        $channel->record(new ChannelDeletedEvent($channel->getId()));
 
         return new JsonResponse([], status: Response::HTTP_NO_CONTENT);
     }

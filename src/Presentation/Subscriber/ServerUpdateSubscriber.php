@@ -24,7 +24,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onMessageCreated(MessageCreatedEvent $messageCreatedEvent)
+    public function onMessageCreated(MessageCreatedEvent $messageCreatedEvent): void
     {
         $update = new Update(
             '/server',
@@ -37,7 +37,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
         $this->hub->publish($update);
     }
 
-    public function onChannelCreated(ChannelCreatedEvent $channelCreatedEvent)
+    public function onChannelCreated(ChannelCreatedEvent $channelCreatedEvent): void
     {
         $update = new Update(
             '/server',
@@ -50,7 +50,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
         $this->hub->publish($update);
     }
 
-    public function onChannelDeleted(ChannelDeletedEvent $channelDeletedEvent)
+    public function onChannelDeleted(ChannelDeletedEvent $channelDeletedEvent): void
     {
         $update = new Update(
             '/server',

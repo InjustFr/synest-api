@@ -8,7 +8,7 @@ use Symfony\Component\Uid\Ulid;
 final readonly class ChannelDeletedEvent implements EventInterface
 {
     public function __construct(
-        public Ulid $id
+        public Ulid $id,
     ) {
     }
 }

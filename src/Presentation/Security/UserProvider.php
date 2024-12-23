@@ -8,6 +8,9 @@ use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
+/**
+ * @implements UserProviderInterface<User>
+ */
 final class UserProvider implements UserProviderInterface
 {
     public function __construct(private FindUserByEmailInterface $findUserByEmail)

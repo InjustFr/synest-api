@@ -4,7 +4,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.4",
+        "php": ">8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "beberlei/assert": "^3.3.3",
@@ -82,8 +82,10 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.65",
+        "psalm/plugin-symfony": "^5.2",
         "symfony/stopwatch": "7.2.*",
         "symfony/web-profiler-bundle": "7.2.*",
-        "vimeo/psalm": "^6.x-dev"
+        "vimeo/psalm": "^5.26",
+        "weirdan/doctrine-psalm-plugin": "^2.9"
     }
 }

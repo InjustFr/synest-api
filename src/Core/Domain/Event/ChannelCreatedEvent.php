@@ -11,7 +11,7 @@ final readonly class ChannelCreatedEvent implements EventInterface
     public function __construct(
         public Ulid $id,
         public string $name,
-        public ChannelType $type
+        public ChannelType $type,
     ) {
     }
 }

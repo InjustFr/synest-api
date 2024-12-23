@@ -14,17 +14,17 @@ final readonly class User implements UserInterface, PasswordAuthenticatedUserInt
 
     public function getRoles(): array
     {
-        return $this->entity->roles;
+        return $this->entity->getRoles();
     }
 
     public function getUserIdentifier(): string
     {
-        return $this->entity->email;
+        return $this->entity->getEmail();
     }
 
     public function getPassword(): ?string
     {
-        return $this->entity->password;
+        return $this->entity->getPassword();
     }
 
     public function eraseCredentials(): void
@@ -32,7 +32,7 @@ final readonly class User implements UserInterface, PasswordAuthenticatedUserInt
     }
 
     public static function createFromEntity(
-        EntityUser $entity
+        EntityUser $entity,
     ): self {
         return new self($entity);
     }

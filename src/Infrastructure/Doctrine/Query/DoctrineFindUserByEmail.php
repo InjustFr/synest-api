@@ -9,8 +9,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrineFindUserByEmail implements FindUserByEmailInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
     public function execute(string $email): ?User
@@ -23,6 +24,9 @@ final class DoctrineFindUserByEmail implements FindUserByEmailInterface
             ->where('u.email = :email')
             ->setParameter('email', $email);
 
-        return $qb->getQuery()->getOneOrNullResult();
+        /** @var User|null */
+        $user = $qb->getQuery()->getOneOrNullResult();
+
+        return $user;
     }
 }

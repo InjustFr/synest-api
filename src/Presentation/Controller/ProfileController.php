@@ -13,7 +13,7 @@ final class ProfileController extends AbstractController
     #[Route('/profile', 'app_profile', methods: ['GET'])]
     public function profile(
         #[CurrentUser]
-        ?User $user
+        ?User $user,
     ): Response {
         if (!$user) {
             throw $this->createAccessDeniedException();

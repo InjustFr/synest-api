@@ -9,7 +9,7 @@ final readonly class MessageDTO
     public function __construct(
         public string $content,
         public string $username,
-        public Ulid $channel
+        public Ulid $channel,
     ) {
     }
 }

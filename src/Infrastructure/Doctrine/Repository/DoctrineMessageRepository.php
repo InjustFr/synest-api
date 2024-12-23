@@ -10,6 +10,9 @@ use Symfony\Component\Uid\Ulid;
 
 final class DoctrineMessageRepository implements MessageRepositoryInterface
 {
+    /**
+     * @var ObjectRepository<Message>
+     */
     private ObjectRepository $objectRepository;
 
     public function __construct(private EntityManagerInterface $entityManager)
@@ -27,7 +30,13 @@ final class DoctrineMessageRepository implements MessageRepositoryInterface
 
     public function get(Ulid $id): Message
     {
-        return $this->objectRepository->find($id);
+        $message = $this->objectRepository->find($id);
+
+        if (!$message) {
+            throw new \InvalidArgumentException('ULID '.$id.' is not a valid message ULID');
+        }
+
+        return $message;
     }
 
     public function save(Message $message): void

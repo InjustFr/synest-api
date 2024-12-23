@@ -10,6 +10,9 @@ use Symfony\Component\Uid\Ulid;
 
 final class DoctrineUserRepository implements UserRepositoryInterface
 {
+    /**
+     * @var ObjectRepository<User>
+     */
     private ObjectRepository $objectRepository;
 
     public function __construct(private EntityManagerInterface $entityManager)

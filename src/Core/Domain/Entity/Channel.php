@@ -7,39 +7,40 @@ use App\Core\Domain\Shared\ChannelType;
 use App\Core\Domain\Shared\ContainsEventsInterface;
 use App\Core\Domain\Shared\PrivateEventRecorderTrait;
 use App\Core\Domain\Shared\RecordsEventsInterface;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Ulid;
 use Assert\Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
+use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity]
-class Channel implements RecordsEventsInterface, ContainsEventsInterface {
+class Channel implements RecordsEventsInterface, ContainsEventsInterface
+{
     use PrivateEventRecorderTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME)]
-    public readonly Ulid $id;
+    private readonly Ulid $id;
 
     #[ORM\Column]
-    public string $name {
-        set(string $value) {
-            Assert::that($value)->notBlank('Name can not be blank');
-            $this->name = $value;
-        }
-    }
+    private string $name;
 
     #[ORM\Column(type: 'string', enumType: ChannelType::class)]
-    public ChannelType $type;
+    private ChannelType $type;
 
+    /**
+     * @var ArrayCollection<array-key, Message>
+     */
     #[ORM\OneToMany(Message::class, mappedBy: 'channel', cascade: ['remove', 'persist'], orphanRemoval: true)]
     private Collection $messages;
 
     private function __construct(
         string $name,
-        ChannelType $type
+        ChannelType $type,
     ) {
+        Assert::that($name)->notBlank('Name can not be blank');
+
         $this->id = new Ulid();
         $this->name = $name;
         $this->type = $type;
@@ -47,22 +48,42 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface {
         $this->messages = new ArrayCollection();
     }
 
+    public function getId(): Ulid
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        Assert::that($name)->notBlank('Name can not be blank');
+        $this->name = $name;
+    }
+
     /**
      * @return Message[]
      */
-    public function getMessages(): array {
+    public function getMessages(): array
+    {
         return $this->messages->toArray();
     }
 
-    public function addMessage(Message $message): void {
+    public function addMessage(Message $message): void
+    {
         $this->messages[] = $message;
     }
 
-    public function removeMessage(Message $message): void {
+    public function removeMessage(Message $message): void
+    {
         $this->messages->removeElement($message);
     }
 
-    public static function create(string $name, ChannelType $type): self {
+    public static function create(string $name, ChannelType $type): self
+    {
         $self = new self($name, $type);
 
         $self->record(new ChannelCreatedEvent($self->id, $self->name, $self->type));

@@ -21,17 +21,17 @@ final class RequestTransactionSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function startTransaction()
+    public function startTransaction(): void
     {
         $this->transactionService->start();
     }
 
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
         $this->transactionService->commit();
     }
 
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         $this->transactionService->rollback();
     }

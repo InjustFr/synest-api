@@ -10,6 +10,9 @@ use Symfony\Component\Uid\Ulid;
 
 final class DoctrineChannelRepository implements ChannelRepositoryInterface
 {
+    /**
+     * @var ObjectRepository<Channel>
+     */
     private ObjectRepository $objectRepository;
 
     public function __construct(private EntityManagerInterface $entityManager)

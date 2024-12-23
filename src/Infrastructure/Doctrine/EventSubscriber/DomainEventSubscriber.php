@@ -8,8 +8,6 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\PostFlushEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -31,7 +29,7 @@ final class DomainEventSubscriber
 
     public function __construct(
         private EventDispatcherInterface $eventDispatcher,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
         $this->entities = new ArrayCollection();
     }
@@ -59,32 +57,31 @@ final class DomainEventSubscriber
         }
     }
 
-    public function preFlush(PreFlushEventArgs $args): void
+    public function preFlush(): void
     {
         foreach ($this->entityManager->getUnitOfWork()->getIdentityMap() as $class => $entities) {
             if (!\in_array(ContainsEventsInterface::class, class_implements($class), true)) {
                 continue;
             }
+            /** @var ContainsEventsInterface $entity */
             foreach ($entities as $entity) {
                 $this->entities->add($entity);
             }
         }
     }
 
-    public function postFlush(PostFlushEventArgs $args): void
+    public function postFlush(): void
     {
         /**
          * @var ArrayCollection<array-key, EventInterface>
          */
         $events = new ArrayCollection();
-        /** @var ContainsEventsInterface $entity */
         foreach ($this->entities as $entity) {
             foreach ($entity->getRecordedEvents() as $domainEvent) {
                 $events->add($domainEvent);
             }
             $entity->clearRecordedEvents();
         }
-        /** @var EventInterface $event */
         foreach ($events as $event) {
             $this->eventDispatcher->dispatch($event, \get_class($event));
         }

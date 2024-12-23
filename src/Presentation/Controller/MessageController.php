@@ -19,7 +19,7 @@ final class MessageController extends AbstractController
     #[Route('/', name: 'list', methods: ['GET'])]
     public function listMessage(
         MessageRepositoryInterface $messageRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
     ): Response {
         return new JsonResponse($serializer->serialize($messageRepository->list(), 'json', ['groups' => 'message']), status: Response::HTTP_OK, json: true);
     }
@@ -42,7 +42,7 @@ final class MessageController extends AbstractController
     public function removeMessage(
         Message $message,
         MessageRepositoryInterface $messageRepository,
-    ) {
+    ): Response {
         $messageRepository->delete($message);
 
         return new JsonResponse([], status: Response::HTTP_NO_CONTENT);

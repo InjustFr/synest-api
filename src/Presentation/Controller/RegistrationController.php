@@ -19,18 +19,18 @@ final class RegistrationController extends AbstractController
         #[MapRequestPayload]
         UserDTO $userDTO,
         UserPasswordHasherInterface $userPasswordHasher,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
     ): Response {
         $userEntity = EntityUser::create($userDTO->email, $userDTO->username, 'temp');
         $user = User::createFromEntity($userEntity);
 
-        $userEntity->password = $userPasswordHasher->hashPassword($user, $userDTO->password);
+        $userEntity->setPassword($userPasswordHasher->hashPassword($user, $userDTO->password));
 
         $userRepository->save($userEntity);
 
         return $this->json([
-            'email' => $userEntity->email,
-            'username' => $userEntity->username,
+            'email' => $userEntity->getEmail(),
+            'username' => $userEntity->getUsername(),
         ], Response::HTTP_CREATED);
     }
 }
