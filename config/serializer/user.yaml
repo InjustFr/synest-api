@@ -1,5 +1,7 @@
 App\Core\Domain\Entity\User:
   attributes:
+    id: 
+      groups: ['user', 'server', 'profile-server']
     username: 
       groups: ['user']
     email: 

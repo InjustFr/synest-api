@@ -3,6 +3,7 @@
 namespace App\Presentation\Controller;
 
 use App\Core\Application\Repository\ChannelRepositoryInterface;
+use App\Core\Application\Repository\ServerRepositoryInterface;
 use App\Core\Domain\DTO\ChannelDTO;
 use App\Core\Domain\Entity\Channel;
 use App\Core\Domain\Event\ChannelDeletedEvent;
@@ -29,9 +30,12 @@ final class ChannelController extends AbstractController
         #[MapRequestPayload]
         ChannelDTO $channelDTO,
         ChannelRepositoryInterface $channelRepository,
+        ServerRepositoryInterface $serverRepository,
         SerializerInterface $serializer,
     ): Response {
-        $channel = Channel::create($channelDTO->name, $channelDTO->type);
+        $server = $serverRepository->get($channelDTO->server);
+
+        $channel = Channel::create($channelDTO->name, $channelDTO->type, $server);
         $channelRepository->save($channel);
 
         return new JsonResponse($serializer->serialize($channel, 'json', ['groups' => 'channel']), status: Response::HTTP_CREATED, json: true);

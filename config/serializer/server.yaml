@@ -1,0 +1,10 @@
+App\Core\Domain\Entity\Server:
+  attributes:
+    id:
+      groups: ['server']
+    name:
+      groups: ['server']
+    owner:
+      groups: ['server']
+    channels:
+      groups: ['server']
