@@ -29,6 +29,10 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
     #[ORM\Column(type: 'string', enumType: ChannelType::class)]
     private ChannelType $type;
 
+    #[ORM\ManyToOne(Server::class, inversedBy: 'channels')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Server $server;
+
     /**
      * @var ArrayCollection<array-key, Message>
      */
@@ -38,12 +42,14 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
     private function __construct(
         string $name,
         ChannelType $type,
+        Server $server
     ) {
         Assert::that($name)->notBlank('Name can not be blank');
 
         $this->id = new Ulid();
         $this->name = $name;
         $this->type = $type;
+        $this->server = $server;
 
         $this->messages = new ArrayCollection();
     }
@@ -64,6 +70,16 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
         $this->name = $name;
     }
 
+    public function getType(): ChannelType
+    {
+        return $this->type;
+    }
+
+    public function getServer(): Server
+    {
+        return $this->server;
+    }
+
     /**
      * @return Message[]
      */
@@ -82,11 +98,11 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
         $this->messages->removeElement($message);
     }
 
-    public static function create(string $name, ChannelType $type): self
+    public static function create(string $name, ChannelType $type, Server $server): self
     {
-        $self = new self($name, $type);
+        $self = new self($name, $type, $server);
 
-        $self->record(new ChannelCreatedEvent($self->id, $self->name, $self->type));
+        $self->record(new ChannelCreatedEvent($self->id, $self->name, $self->type, $self->server->getId()));
 
         return $self;
     }

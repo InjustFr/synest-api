@@ -3,6 +3,8 @@
 namespace App\Core\Domain\Entity;
 
 use Assert\Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
@@ -34,6 +36,12 @@ class User
     private array $roles = ['ROLE_USER'];
 
     /**
+     * @var ArrayCollection<array-key, Server>
+     */
+    #[ORM\ManyToMany(Server::class, inversedBy: 'users', cascade: ['persist'])]
+    private Collection $servers;
+
+    /**
      * @param non-empty-string $email
      */
     private function __construct(
@@ -49,6 +57,31 @@ class User
         $this->email = $email;
         $this->username = $username;
         $this->password = $password;
+
+        $this->servers = new ArrayCollection();
+    }
+
+    /**
+     * @return Server[]
+     */
+    public function getServers(): array
+    {
+        return $this->servers->toArray();
+    }
+
+    public function addServer(Server $server): void
+    {
+        if (!$this->servers->contains($server)) {
+            $this->servers[] = $server;
+            $server->addUser($this);
+        }
+    }
+
+    public function removeServer(Server $server): void
+    {
+        if ($this->servers->removeElement($server)) {
+            $server->removeUser($this);
+        }
     }
 
     public function getId(): Ulid

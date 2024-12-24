@@ -1,10 +1,10 @@
 App\Core\Domain\Entity\Channel:
   attributes:
     id:
-      groups: ['channel', 'message']
+      groups: ['channel', 'message', 'server']
     name:
-      groups: ['channel']
+      groups: ['channel', 'server']
     type:
-      groups: ['channel']
+      groups: ['channel', 'server']
     messages:
       groups: ['channel']
