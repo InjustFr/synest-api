@@ -1,10 +1,10 @@
 App\Core\Domain\Entity\Server:
   attributes:
     id:
-      groups: ['server']
+      groups: ['server', 'profile-server']
     name:
-      groups: ['server']
+      groups: ['server', 'profile-server']
     owner:
-      groups: ['server']
+      groups: ['server', 'profile-server']
     channels:
       groups: ['server']
