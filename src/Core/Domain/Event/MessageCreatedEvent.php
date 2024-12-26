@@ -12,6 +12,7 @@ final readonly class MessageCreatedEvent implements EventInterface
         public string $content,
         public string $username,
         public Ulid $channel,
+        public Ulid $server
     ) {
     }
 }

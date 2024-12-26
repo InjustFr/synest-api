@@ -2,53 +2,53 @@
 
 namespace App\Presentation\Controller;
 
-use App\Core\Application\Repository\ChannelRepositoryInterface;
 use App\Core\Application\Repository\ServerRepositoryInterface;
 use App\Core\Domain\DTO\ChannelDTO;
 use App\Core\Domain\Entity\Channel;
+use App\Core\Domain\Entity\Server;
 use App\Core\Domain\Event\ChannelDeletedEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/channels', name: 'api_channels_')]
+#[Route('/servers/{server}/channels', name: 'api_servers_channels_')]
 final class ChannelController extends AbstractController
 {
     #[Route('', name: 'list', methods: ['GET'])]
     public function listChannel(
-        ChannelRepositoryInterface $channelRepository,
-        SerializerInterface $serializer,
+        Server $server
     ): Response {
-        return new JsonResponse($serializer->serialize($channelRepository->list(), 'json', ['groups' => 'channel']), status: Response::HTTP_OK, json: true);
+        return $this->json($server->getChannels(), Response::HTTP_OK, context: ['groups' => 'channel']);
     }
 
     #[Route('', name: 'add', methods: ['POST'])]
     public function addChannel(
+        Server $server,
         #[MapRequestPayload]
         ChannelDTO $channelDTO,
-        ChannelRepositoryInterface $channelRepository,
-        ServerRepositoryInterface $serverRepository,
-        SerializerInterface $serializer,
+        ServerRepositoryInterface $serverRepository
     ): Response {
-        $server = $serverRepository->get($channelDTO->server);
-
         $channel = Channel::create($channelDTO->name, $channelDTO->type, $server);
-        $channelRepository->save($channel);
+        $server->addChannel($channel);
 
-        return new JsonResponse($serializer->serialize($channel, 'json', ['groups' => 'channel']), status: Response::HTTP_CREATED, json: true);
+        $serverRepository->save($server);
+
+        return $this->json($channel, Response::HTTP_OK, context: ['groups' => 'channel']);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
     public function removeChannel(
+        Server $server,
         Channel $channel,
-        ChannelRepositoryInterface $channelRepository,
+        ServerRepositoryInterface $serverRepository,
     ): Response {
-        $channelRepository->delete($channel);
-        $channel->record(new ChannelDeletedEvent($channel->getId()));
+        $server->removeChannel($channel);
 
-        return new JsonResponse([], status: Response::HTTP_NO_CONTENT);
+        $serverRepository->save($server);
+
+        $channel->record(new ChannelDeletedEvent($channel->getId(), $server->getId()));
+
+        return $this->json([], Response::HTTP_NO_CONTENT);
     }
 }

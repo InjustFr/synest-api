@@ -9,6 +9,7 @@ final readonly class ChannelDeletedEvent implements EventInterface
 {
     public function __construct(
         public Ulid $id,
+        public Ulid $server
     ) {
     }
 }

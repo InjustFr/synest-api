@@ -81,7 +81,7 @@ class Message implements RecordsEventsInterface, ContainsEventsInterface
     {
         $self = new self($content, $username, $channel);
 
-        $self->record(new MessageCreatedEvent($self->id, $content, $username, $channel->getId()));
+        $self->record(new MessageCreatedEvent($self->id, $content, $username, $channel->getId(), $channel->getServer()->getId()));
 
         return $self;
     }

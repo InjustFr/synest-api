@@ -27,7 +27,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
     public function onMessageCreated(MessageCreatedEvent $messageCreatedEvent): void
     {
         $update = new Update(
-            '/server',
+            '/server/'.$messageCreatedEvent->server,
             json_encode([
                 'type' => 'message_created',
                 'data' => $messageCreatedEvent,
@@ -40,7 +40,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
     public function onChannelCreated(ChannelCreatedEvent $channelCreatedEvent): void
     {
         $update = new Update(
-            '/server',
+            '/server/'.$channelCreatedEvent->server,
             json_encode([
                 'type' => 'channel_created',
                 'data' => $channelCreatedEvent,
@@ -53,7 +53,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
     public function onChannelDeleted(ChannelDeletedEvent $channelDeletedEvent): void
     {
         $update = new Update(
-            '/server',
+            '/server/'.$channelDeletedEvent->server,
             json_encode([
                 'type' => 'channel_deleted',
                 'data' => $channelDeletedEvent,
