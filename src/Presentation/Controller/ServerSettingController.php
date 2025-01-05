@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Controller;
 
 use App\Core\Application\Repository\ServerSettingRepositoryInterface;
@@ -15,7 +17,7 @@ final class ServerSettingController extends AbstractController
 {
     #[Route('', 'list', methods: ['GET'])]
     public function list(
-        ServerSettingRepositoryInterface $serverSettingRepository
+        ServerSettingRepositoryInterface $serverSettingRepository,
     ): Response {
         return $this->json($serverSettingRepository->list(), Response::HTTP_OK, context: ['groups' => 'server-setting']);
     }
@@ -24,7 +26,7 @@ final class ServerSettingController extends AbstractController
     public function post(
         #[MapRequestPayload]
         ServerSettingDTO $serverSettingDTO,
-        ServerSettingRepositoryInterface $serverSettingRepository
+        ServerSettingRepositoryInterface $serverSettingRepository,
     ): Response {
         $serverSetting = ServerSetting::create(
             $serverSettingDTO->key,
@@ -42,7 +44,7 @@ final class ServerSettingController extends AbstractController
         ServerSetting $serverSetting,
         #[MapRequestPayload]
         ServerSettingDTO $serverSettingDTO,
-        ServerSettingRepositoryInterface $serverSettingRepository
+        ServerSettingRepositoryInterface $serverSettingRepository,
     ): Response {
         $serverSetting->setKey($serverSettingDTO->key);
         $serverSetting->setType($serverSettingDTO->type);
@@ -56,7 +58,7 @@ final class ServerSettingController extends AbstractController
     #[Route('/{serverSetting}', 'delete', methods: ['DELETE'])]
     public function delete(
         ServerSetting $serverSetting,
-        ServerSettingRepositoryInterface $serverSettingRepository
+        ServerSettingRepositoryInterface $serverSettingRepository,
     ): Response {
         $serverSettingRepository->delete($serverSetting);
 

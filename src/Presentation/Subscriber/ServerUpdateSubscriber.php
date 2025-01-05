@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Subscriber;
 
 use App\Core\Domain\Event\ChannelCreatedEvent;

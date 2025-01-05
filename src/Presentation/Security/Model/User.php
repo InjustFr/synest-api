@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Security\Model;
 
 use App\Core\Domain\Entity\User as EntityUser;

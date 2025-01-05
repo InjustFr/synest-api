@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Domain\Event;
 
 use App\Core\Domain\Shared\ChannelType;
@@ -12,7 +14,7 @@ final readonly class ChannelCreatedEvent implements EventInterface
         public Ulid $id,
         public string $name,
         public ChannelType $type,
-        public Ulid $server
+        public Ulid $server,
     ) {
     }
 }

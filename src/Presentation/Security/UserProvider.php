@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Security;
 
 use App\Core\Application\Query\FindUserByEmailInterface;

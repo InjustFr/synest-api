@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Controller;
 
 use App\Core\Application\Repository\ServerRepositoryInterface;
@@ -17,7 +19,7 @@ final class ChannelController extends AbstractController
 {
     #[Route('', name: 'list', methods: ['GET'])]
     public function listChannel(
-        Server $server
+        Server $server,
     ): Response {
         return $this->json($server->getChannels(), Response::HTTP_OK, context: ['groups' => 'channel']);
     }
@@ -27,7 +29,7 @@ final class ChannelController extends AbstractController
         Server $server,
         #[MapRequestPayload]
         ChannelDTO $channelDTO,
-        ServerRepositoryInterface $serverRepository
+        ServerRepositoryInterface $serverRepository,
     ): Response {
         $channel = Channel::create($channelDTO->name, $channelDTO->type, $server);
         $server->addChannel($channel);

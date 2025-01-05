@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Domain\Event;
 
 use App\Core\Domain\Shared\EventInterface;
@@ -10,7 +12,7 @@ final readonly class ServerCreatedEvent implements EventInterface
     public function __construct(
         public Ulid $id,
         public string $name,
-        public Ulid $owner
+        public Ulid $owner,
     ) {
     }
 }

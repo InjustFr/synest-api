@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Controller;
 
 use App\Core\Application\Repository\ServerRepositoryInterface;
@@ -17,7 +19,7 @@ final class ServerController extends AbstractController
 {
     #[Route('', 'list', methods: ['GET'])]
     public function list(
-        ServerRepositoryInterface $serverRepository
+        ServerRepositoryInterface $serverRepository,
     ): Response {
         return $this->json($serverRepository->list(), Response::HTTP_OK, context: ['groups' => 'server']);
     }
@@ -28,7 +30,7 @@ final class ServerController extends AbstractController
         ServerDTO $serverDTO,
         #[CurrentUser]
         ?User $user,
-        ServerRepositoryInterface $serverRepository
+        ServerRepositoryInterface $serverRepository,
     ): Response {
         if (!$user) {
             throw $this->createAccessDeniedException();
@@ -51,7 +53,7 @@ final class ServerController extends AbstractController
         Server $server,
         #[CurrentUser]
         ?User $user,
-        ServerRepositoryInterface $serverRepository
+        ServerRepositoryInterface $serverRepository,
     ): Response {
         if (!$user) {
             throw $this->createAccessDeniedException();
@@ -68,7 +70,7 @@ final class ServerController extends AbstractController
         Server $server,
         #[CurrentUser]
         ?User $user,
-        ServerRepositoryInterface $serverRepository
+        ServerRepositoryInterface $serverRepository,
     ): Response {
         if (!$user) {
             throw $this->createAccessDeniedException();
@@ -85,7 +87,7 @@ final class ServerController extends AbstractController
         Server $server,
         #[CurrentUser]
         ?User $user,
-        ServerRepositoryInterface $serverRepository
+        ServerRepositoryInterface $serverRepository,
     ): Response {
         if (!$user) {
             throw $this->createAccessDeniedException();

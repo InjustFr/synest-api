@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Doctrine\EventSubscriber;
 
 use App\Core\Domain\Shared\ContainsEventsInterface;
@@ -83,7 +85,7 @@ final class DomainEventSubscriber
             $entity->clearRecordedEvents();
         }
         foreach ($events as $event) {
-            $this->eventDispatcher->dispatch($event, \get_class($event));
+            $this->eventDispatcher->dispatch($event, $event::class);
         }
     }
 }

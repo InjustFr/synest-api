@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "184a8cb7331124476ec68f8ad26c479b",
+    "content-hash": "8eacbfbdd226392c83980af9d40d6ad5",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1435,16 +1435,16 @@
         },
         {
             "name": "lexik/jwt-authentication-bundle",
-            "version": "v3.1.0",
+            "version": "v3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lexik/LexikJWTAuthenticationBundle.git",
-                "reference": "4f1a638289cf9282bad1b82b8df56d3bd4e0743c"
+                "reference": "ebe0e2c6a0ae17b4702feffc89e32e3aaba6cb61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lexik/LexikJWTAuthenticationBundle/zipball/4f1a638289cf9282bad1b82b8df56d3bd4e0743c",
-                "reference": "4f1a638289cf9282bad1b82b8df56d3bd4e0743c",
+                "url": "https://api.github.com/repos/lexik/LexikJWTAuthenticationBundle/zipball/ebe0e2c6a0ae17b4702feffc89e32e3aaba6cb61",
+                "reference": "ebe0e2c6a0ae17b4702feffc89e32e3aaba6cb61",
                 "shasum": ""
             },
             "require": {
@@ -1463,7 +1463,8 @@
                 "symfony/translation-contracts": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
-                "api-platform/core": "^3.0",
+                "api-platform/core": "^3.0|^4.0",
+                "rector/rector": "^1.2",
                 "symfony/browser-kit": "^6.4|^7.0",
                 "symfony/console": "^6.4|^7.0",
                 "symfony/dom-crawler": "^6.4|^7.0",
@@ -1534,7 +1535,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lexik/LexikJWTAuthenticationBundle/issues",
-                "source": "https://github.com/lexik/LexikJWTAuthenticationBundle/tree/v3.1.0"
+                "source": "https://github.com/lexik/LexikJWTAuthenticationBundle/tree/v3.1.1"
             },
             "funding": [
                 {
@@ -1546,7 +1547,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-03T20:49:59+00:00"
+            "time": "2025-01-06T16:34:57+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -6750,16 +6751,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.66.1",
+            "version": "v3.67.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "cde186799d8e92960c5a00c96e6214bf7f5547a9"
+                "reference": "0ad34c75d1172f7d30320460e803887981830cbf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/cde186799d8e92960c5a00c96e6214bf7f5547a9",
-                "reference": "cde186799d8e92960c5a00c96e6214bf7f5547a9",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/0ad34c75d1172f7d30320460e803887981830cbf",
+                "reference": "0ad34c75d1172f7d30320460e803887981830cbf",
                 "shasum": ""
             },
             "require": {
@@ -6841,7 +6842,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.66.1"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.67.0"
             },
             "funding": [
                 {
@@ -6849,7 +6850,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-05T14:43:25+00:00"
+            "time": "2025-01-08T10:17:40+00:00"
         },
         {
             "name": "netresearch/jsonmapper",

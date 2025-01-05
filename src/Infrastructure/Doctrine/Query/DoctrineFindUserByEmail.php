@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Doctrine\Query;
 
 use App\Core\Application\Query\FindUserByEmailInterface;
@@ -10,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 final class DoctrineFindUserByEmail implements FindUserByEmailInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -24,8 +26,11 @@ final class DoctrineFindUserByEmail implements FindUserByEmailInterface
             ->where('u.email = :email')
             ->setParameter('email', $email);
 
-        /** @var User|null */
         $user = $qb->getQuery()->getOneOrNullResult();
+
+        if (null !== $user && !$user instanceof User) {
+            throw new \LogicException('Query did not return expected User or null type.');
+        }
 
         return $user;
     }

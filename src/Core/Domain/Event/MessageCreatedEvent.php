@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Domain\Event;
 
 use App\Core\Domain\Shared\EventInterface;
@@ -12,7 +14,7 @@ final readonly class MessageCreatedEvent implements EventInterface
         public string $content,
         public string $username,
         public Ulid $channel,
-        public Ulid $server
+        public Ulid $server,
     ) {
     }
 }

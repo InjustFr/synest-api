@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Domain\Entity;
 
 use App\Core\Domain\Event\ServerCreatedEvent;
@@ -124,7 +126,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
 
     public static function create(
         string $name,
-        User $owner
+        User $owner,
     ): self {
         $self = new self($name, $owner);
 

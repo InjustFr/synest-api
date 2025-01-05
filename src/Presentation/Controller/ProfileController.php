@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Presentation\Controller;
 
 use App\Presentation\Security\Model\User;
@@ -17,8 +19,6 @@ final class ProfileController extends AbstractController
     public function profile(
         #[CurrentUser]
         ?User $user,
-        Request $request,
-        Discovery $discovery
     ): Response {
         if (!$user) {
             throw $this->createAccessDeniedException();
@@ -34,7 +34,7 @@ final class ProfileController extends AbstractController
         #[CurrentUser]
         ?User $user,
         Request $request,
-        Discovery $discovery
+        Discovery $discovery,
     ): Response {
         if (!$user) {
             throw $this->createAccessDeniedException();

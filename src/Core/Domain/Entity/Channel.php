@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Domain\Entity;
 
 use App\Core\Domain\Event\ChannelCreatedEvent;
@@ -42,7 +44,7 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
     private function __construct(
         string $name,
         ChannelType $type,
-        Server $server
+        Server $server,
     ) {
         Assert::that($name)->notBlank('Name can not be blank');
 
@@ -98,8 +100,11 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
         $this->messages->removeElement($message);
     }
 
-    public static function create(string $name, ChannelType $type, Server $server): self
-    {
+    public static function create(
+        string $name,
+        ChannelType $type,
+        Server $server,
+    ): self {
         $self = new self($name, $type, $server);
 
         $self->record(new ChannelCreatedEvent($self->id, $self->name, $self->type, $self->server->getId()));
