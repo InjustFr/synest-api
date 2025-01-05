@@ -1,0 +1,10 @@
+App\Core\Domain\Entity\ServerSetting:
+  attributes:
+    id:
+      groups: ['server-setting']
+    key:
+      groups: ['server-setting']
+    type:
+      groups: ['server-setting']
+    description:
+      groups: ['server-setting']

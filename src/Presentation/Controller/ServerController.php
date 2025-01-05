@@ -43,7 +43,7 @@ final class ServerController extends AbstractController
 
         $serverRepository->save($server);
 
-        return $this->json($server, Response::HTTP_OK, context: ['groups' => 'server']);
+        return $this->json($server, Response::HTTP_CREATED, context: ['groups' => 'server']);
     }
 
     #[Route('/{server}/join', 'join', methods: ['POST'])]
