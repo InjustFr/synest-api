@@ -25,19 +25,27 @@ class ServerSetting
     #[ORM\Column(type: 'text')]
     private string $description;
 
+    #[ORM\Column]
+    private string $defaultValue;
+
     private function __construct(
         string $key,
         string $type,
         string $description,
+        mixed $defaultValue,
     ) {
         Assert::that($key)->notBlank('Key can not be blank.');
         Assert::that($type)->notBlank('Type can not be blank.');
         Assert::that($description)->notBlank('Description can not be blank.');
+        Assert::that($defaultValue)->satisfy(function (mixed $defaultValue) use ($type) {
+            return \gettype($defaultValue) === $type;
+        }, \sprintf('Default value is not of type %s', $type));
 
         $this->id = new Ulid();
         $this->key = $key;
         $this->type = $type;
         $this->description = $description;
+        $this->defaultValue = json_encode($defaultValue);
     }
 
     public function getId(): Ulid
@@ -81,11 +89,26 @@ class ServerSetting
         $this->description = $description;
     }
 
+    public function getDefaultValue(): mixed
+    {
+        return json_decode($this->defaultValue);
+    }
+
+    public function setDefaultValue(mixed $defaultValue): void
+    {
+        Assert::that($defaultValue)->satisfy(function (mixed $defaultValue) {
+            return \gettype($defaultValue) === $this->type;
+        }, \sprintf('Default value is not of type %s', $this->type));
+
+        $this->defaultValue = json_encode($defaultValue);
+    }
+
     public static function create(
         string $key,
         string $type,
         string $description,
+        mixed $defaultValue,
     ): self {
-        return new self($key, $type, $description);
+        return new self($key, $type, $description, $defaultValue);
     }
 }

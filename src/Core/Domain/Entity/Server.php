@@ -44,6 +44,12 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     #[ORM\ManyToMany(User::class, mappedBy: 'servers', cascade: ['persist'])]
     private Collection $users;
 
+    /**
+     * @var ArrayCollection<array-key, ServerSettingValue>
+     */
+    #[ORM\OneToMany(ServerSettingValue::class, mappedBy: 'server', cascade: ['persist', 'remove'])]
+    private Collection $settingValues;
+
     private function __construct(string $name, User $owner)
     {
         $this->id = new Ulid();
@@ -52,6 +58,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
 
         $this->channels = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->settingValues = new ArrayCollection();
     }
 
     public function getId(): Ulid
@@ -122,6 +129,60 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         if ($this->users->removeElement($user)) {
             $user->removeServer($this);
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getSettings(): array
+    {
+        $settings = [];
+        foreach ($this->settingValues as $value) {
+            /** @psalm-suppress MixedAssignment */
+            $settings[$value->getServerSetting()->getKey()] = $value->getValue();
+        }
+
+        return $settings;
+    }
+
+    private function findSettingValue(ServerSetting $setting): ?ServerSettingValue
+    {
+        /** @var ServerSettingValue|null */
+        return $this->settingValues->findFirst(function ($k, $value) use ($setting) {
+            /** @var ServerSettingValue $value */
+            return $value->getServerSetting() === $setting;
+        });
+    }
+
+    public function getSettingValue(ServerSetting $serverSetting): mixed
+    {
+        $settingValue = $this->findSettingValue($serverSetting);
+
+        return $settingValue ? $settingValue->getValue() : $serverSetting->getDefaultValue();
+    }
+
+    public function setSetting(ServerSetting $serverSetting, mixed $value): void
+    {
+        $settingValue = $this->findSettingValue($serverSetting);
+
+        if ($settingValue) {
+            $settingValue->setValue($value);
+
+            return;
+        }
+
+        $this->settingValues[] = ServerSettingValue::create($serverSetting, $this, $value);
+    }
+
+    public function removeSettingValue(ServerSetting $serverSetting): void
+    {
+        $settingValue = $this->findSettingValue($serverSetting);
+
+        if (!$settingValue instanceof ServerSettingValue) {
+            throw new \InvalidArgumentException('Could not find value for setting '.$serverSetting->getKey());
+        }
+
+        $this->settingValues->removeElement($settingValue);
     }
 
     public static function create(

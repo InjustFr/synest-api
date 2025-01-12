@@ -22,6 +22,7 @@ return (new PhpCsFixer\Config())
         'simplified_if_return' => true,
         'simplified_null_return' => true,
         'ternary_to_null_coalescing' => true,
+        'phpdoc_to_comment' => false,
     ])
     ->setRiskyAllowed(true)
     ->setFinder($finder)

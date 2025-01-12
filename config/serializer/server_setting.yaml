@@ -8,3 +8,5 @@ App\Core\Domain\Entity\ServerSetting:
       groups: ['server-setting']
     description:
       groups: ['server-setting']
+    defaultValue:
+      groups: ['server-setting']

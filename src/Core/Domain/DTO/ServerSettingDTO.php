@@ -10,6 +10,7 @@ final readonly class ServerSettingDTO
         public string $key,
         public string $type,
         public string $description,
+        public mixed $defaultValue,
     ) {
     }
 }

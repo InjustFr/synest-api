@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controller;
 
+use App\Core\Application\Query\FindServerSettingByKeyInterface;
 use App\Core\Application\Repository\ServerRepositoryInterface;
+use App\Core\Application\Repository\ServerSettingRepositoryInterface;
 use App\Core\Domain\DTO\ServerDTO;
+use App\Core\Domain\DTO\ServerSettingValueDTO;
 use App\Core\Domain\Entity\Server;
 use App\Presentation\Security\Model\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -98,5 +101,45 @@ final class ServerController extends AbstractController
         }
 
         return $this->json([], Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/{server}/settings', 'settings', methods: ['GET'])]
+    public function getSettings(
+        Server $server,
+        ServerSettingRepositoryInterface $serverSettingRepository,
+    ): Response {
+        $availableSettings = $serverSettingRepository->list();
+
+        $mappedSettings = [];
+        foreach ($availableSettings as $setting) {
+            /** @psalm-suppress MixedAssignment */
+            $mappedSettings[$setting->getKey()] = $setting->getDefaultValue();
+        }
+
+        return $this->json([...$mappedSettings, ...$server->getSettings()], Response::HTTP_OK);
+    }
+
+    #[Route('/{server}/settings/{settingKey}', 'update_setting', methods: ['PUT'])]
+    public function setSetting(
+        Server $server,
+        string $settingKey,
+        #[MapRequestPayload]
+        ServerSettingValueDTO $serverSettingValueDTO,
+        FindServerSettingByKeyInterface $findServerSettingByKey,
+        ServerRepositoryInterface $serverRepository,
+    ): Response {
+        $serverSetting = $findServerSettingByKey->execute($settingKey);
+
+        if (!$serverSetting) {
+            throw $this->createNotFoundException();
+        }
+
+        $server->setSetting($serverSetting, $serverSettingValueDTO->value);
+
+        $serverRepository->save($server);
+
+        return $this->json([
+            $serverSetting->getKey() => $server->getSettingValue($serverSetting),
+        ], Response::HTTP_OK);
     }
 }

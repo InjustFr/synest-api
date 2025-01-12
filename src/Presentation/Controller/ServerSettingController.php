@@ -31,7 +31,8 @@ final class ServerSettingController extends AbstractController
         $serverSetting = ServerSetting::create(
             $serverSettingDTO->key,
             $serverSettingDTO->type,
-            $serverSettingDTO->description
+            $serverSettingDTO->description,
+            $serverSettingDTO->defaultValue
         );
 
         $serverSettingRepository->save($serverSetting);
@@ -49,6 +50,7 @@ final class ServerSettingController extends AbstractController
         $serverSetting->setKey($serverSettingDTO->key);
         $serverSetting->setType($serverSettingDTO->type);
         $serverSetting->setDescription($serverSettingDTO->description);
+        $serverSetting->setDefaultValue($serverSettingDTO->defaultValue);
 
         $serverSettingRepository->save($serverSetting);
 
