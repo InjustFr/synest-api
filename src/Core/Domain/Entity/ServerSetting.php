@@ -14,7 +14,7 @@ class ServerSetting
 {
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME)]
-    private readonly Ulid $id;
+    private Ulid $id;
 
     #[ORM\Column]
     private string $key;

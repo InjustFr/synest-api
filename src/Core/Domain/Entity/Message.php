@@ -20,7 +20,7 @@ class Message implements RecordsEventsInterface, ContainsEventsInterface
 
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME)]
-    private readonly Ulid $id;
+    private Ulid $id;
 
     #[ORM\Column(type: 'text')]
     private string $content;

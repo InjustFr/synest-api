@@ -14,15 +14,15 @@ class ServerSettingValue
 {
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME)]
-    private readonly Ulid $id;
+    private Ulid $id;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private readonly ServerSetting $serverSetting;
+    private ServerSetting $serverSetting;
 
     #[ORM\ManyToOne(inversedBy: 'settingValues')]
     #[ORM\JoinColumn(nullable: false)]
-    private readonly Server $server;
+    private Server $server;
 
     #[ORM\Column]
     private string $value;

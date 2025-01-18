@@ -8,3 +8,5 @@ App\Core\Domain\Entity\Server:
       groups: ['server', 'profile-server']
     channels:
       groups: ['server']
+    settings:
+      groups: ['profile-server']
