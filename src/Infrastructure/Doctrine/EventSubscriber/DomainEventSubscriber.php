@@ -15,6 +15,7 @@ use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[AsDoctrineListener(event: Events::prePersist, priority: 500, connection: 'default')]
@@ -51,6 +52,9 @@ final class DomainEventSubscriber
         $this->addContainsEventsEntityToCollection($args);
     }
 
+    /**
+     * @param LifecycleEventArgs<ObjectManager> $args
+     */
     private function addContainsEventsEntityToCollection(LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();

@@ -4,17 +4,17 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">8.3",
+        "php": ">8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "beberlei/assert": "^3.3.3",
-        "doctrine/dbal": "^3.9.3",
-        "doctrine/doctrine-bundle": "^2.13.1",
-        "doctrine/doctrine-migrations-bundle": "^3.3.1",
-        "doctrine/orm": "^3.3.1",
+        "doctrine/dbal": "^3.9.4",
+        "doctrine/doctrine-bundle": "^2.13.2",
+        "doctrine/doctrine-migrations-bundle": "^3.4.1",
+        "doctrine/orm": "^3.3.2",
         "lexik/jwt-authentication-bundle": "^3.1.1",
         "phpdocumentor/reflection-docblock": "^5.6.1",
-        "phpstan/phpdoc-parser": "^2.0",
+        "phpstan/phpdoc-parser": "^2.1",
         "runtime/frankenphp-symfony": "^0.2.0",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
@@ -82,11 +82,12 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.67.0",
-        "psalm/plugin-symfony": "^5.2.6",
+        "friendsofphp/php-cs-fixer": "^3.69.1",
+        "phpstan/phpstan": "^2.1.6",
+        "phpstan/phpstan-beberlei-assert": "^2.0",
+        "phpstan/phpstan-doctrine": "^2.0.1",
+        "phpstan/phpstan-symfony": "^2.0.2",
         "symfony/stopwatch": "7.2.*",
-        "symfony/web-profiler-bundle": "7.2.*",
-        "vimeo/psalm": "^5.26.1",
-        "weirdan/doctrine-psalm-plugin": "^2.9"
+        "symfony/web-profiler-bundle": "7.2.*"
     }
 }

@@ -33,7 +33,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
             json_encode([
                 'type' => 'message_created',
                 'data' => $messageCreatedEvent,
-            ])
+            ]) ?: ''
         );
 
         $this->hub->publish($update);
@@ -46,7 +46,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
             json_encode([
                 'type' => 'channel_created',
                 'data' => $channelCreatedEvent,
-            ])
+            ]) ?: ''
         );
 
         $this->hub->publish($update);
@@ -59,7 +59,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
             json_encode([
                 'type' => 'channel_deleted',
                 'data' => $channelDeletedEvent,
-            ])
+            ]) ?: ''
         );
 
         $this->hub->publish($update);

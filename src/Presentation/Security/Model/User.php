@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    private function __construct(public EntityUser $entity)
+    private function __construct(public readonly EntityUser $entity)
     {
     }
 
@@ -24,7 +24,7 @@ final readonly class User implements UserInterface, PasswordAuthenticatedUserInt
         return $this->entity->getEmail();
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->entity->getPassword();
     }

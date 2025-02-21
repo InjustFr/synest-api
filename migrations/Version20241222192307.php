@@ -21,7 +21,6 @@ final class Version20241222192307 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE server (id UUID NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('INSERT INTO server (id, name) VALUES (\'0193efdd-0a4a-e267-778f-38f9ae30ac6e\'::UUID, \'test\')');
         $this->addSql('COMMENT ON COLUMN server.id IS \'(DC2Type:ulid)\'');
         $this->addSql('ALTER TABLE channel ADD server_id UUID NOT NULL DEFAULT \'0193efdd-0a4a-e267-778f-38f9ae30ac6e\'::UUID');
         $this->addSql('COMMENT ON COLUMN channel.server_id IS \'(DC2Type:ulid)\'');

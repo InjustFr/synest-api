@@ -12,6 +12,9 @@ use Symfony\Component\Uid\Ulid;
  */
 interface ServerRepositoryInterface
 {
+    /**
+     * @return Server[]
+     */
     public function list(): array;
 
     public function get(Ulid $id): Server;

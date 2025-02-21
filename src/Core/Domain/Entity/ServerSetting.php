@@ -45,7 +45,7 @@ class ServerSetting
         $this->key = $key;
         $this->type = $type;
         $this->description = $description;
-        $this->defaultValue = json_encode($defaultValue);
+        $this->defaultValue = json_encode($defaultValue) ?: '';
     }
 
     public function getId(): Ulid
@@ -100,7 +100,7 @@ class ServerSetting
             return \gettype($defaultValue) === $this->type;
         }, \sprintf('Default value is not of type %s', $this->type));
 
-        $this->defaultValue = json_encode($defaultValue);
+        $this->defaultValue = json_encode($defaultValue) ?: '';
     }
 
     public static function create(

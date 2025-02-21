@@ -39,7 +39,7 @@ class ServerSettingValue
         $this->id = new Ulid();
         $this->serverSetting = $serverSetting;
         $this->server = $server;
-        $this->value = json_encode($value);
+        $this->value = json_encode($value) ?: '';
     }
 
     public function getId(): Ulid
@@ -68,7 +68,7 @@ class ServerSettingValue
             return \gettype($value) === $this->serverSetting->getType();
         }, \sprintf('Value is not of type %s', $this->serverSetting->getType()));
 
-        $this->value = json_encode($value);
+        $this->value = json_encode($value) ?: '';
     }
 
     public static function create(
