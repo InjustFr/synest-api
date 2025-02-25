@@ -33,6 +33,7 @@
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,
+            "phpstan/extension-installer": true,
             "symfony/flex": true,
             "symfony/runtime": true
         },
@@ -83,6 +84,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.69.1",
+        "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1.6",
         "phpstan/phpstan-beberlei-assert": "^2.0",
         "phpstan/phpstan-doctrine": "^2.0.1",

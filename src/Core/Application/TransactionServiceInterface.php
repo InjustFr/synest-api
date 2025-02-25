@@ -6,9 +6,9 @@ namespace App\Core\Application;
 
 interface TransactionServiceInterface
 {
-    public function start(): void;
+    public function start(): bool;
 
-    public function commit(): void;
+    public function commit(): bool;
 
-    public function rollback(): void;
+    public function rollback(): bool;
 }

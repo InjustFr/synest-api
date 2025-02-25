@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Doctrine;
 
 use App\Core\Application\TransactionServiceInterface;
+use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrineTransactionService implements TransactionServiceInterface
@@ -13,24 +14,46 @@ final class DoctrineTransactionService implements TransactionServiceInterface
     {
     }
 
-    public function start(): void
+    public function start(): bool
     {
-        $this->entityManager->getConnection()->beginTransaction();
+        $result = $this->entityManager->getConnection()->beginTransaction();
+
+        Assert::that($result)
+            ->true('Could not start database transaction');
+        Assert::that($this->entityManager->getConnection()->isTransactionActive())
+            ->true('Could not start database transaction');
+
+        return $result;
     }
 
-    public function commit(): void
+    public function commit(): bool
     {
+        $result = true;
+
         $this->entityManager->flush();
+
         if ($this->entityManager->getConnection()->isTransactionActive()) {
-            $this->entityManager->getConnection()->commit();
+            $result = $this->entityManager->getConnection()->commit();
+
+            Assert::that($result)
+                ->true('Could not commit database transaction');
         }
+
+        return $result;
     }
 
-    public function rollback(): void
+    public function rollback(): bool
     {
+        $result = true;
+
         if ($this->entityManager->getConnection()->isTransactionActive()) {
-            $this->entityManager->getConnection()->rollBack();
+            $result = $this->entityManager->getConnection()->rollBack();
+            Assert::that($result)
+                ->true('Could not rollback database transaction');
         }
+
         $this->entityManager->clear();
+
+        return $result;
     }
 }

@@ -8,6 +8,7 @@ use App\Core\Domain\Event\ServerCreatedEvent;
 use App\Core\Domain\Shared\ContainsEventsInterface;
 use App\Core\Domain\Shared\PrivateEventRecorderTrait;
 use App\Core\Domain\Shared\RecordsEventsInterface;
+use App\Infrastructure\Doctrine\Type\NonEmptyStringType;
 use Assert\Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,7 +26,10 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     #[ORM\Column(type: UlidType::NAME)]
     private Ulid $id;
 
-    #[ORM\Column]
+    /**
+     * @var non-empty-string
+     */
+    #[ORM\Column(type: NonEmptyStringType::TYPE)]
     private string $name;
 
     #[ORM\ManyToOne(User::class)]
@@ -52,6 +56,9 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
 
     private function __construct(string $name, User $owner)
     {
+        Assert::that($name)->notBlank('Name can not be blank');
+        Assert::that($name)->maxLength(255, 'Name is too long.');
+
         $this->id = new Ulid();
         $this->name = $name;
         $this->owner = $owner;
@@ -74,6 +81,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     public function setName(string $name): void
     {
         Assert::that($name)->notBlank('Name can not be blank');
+        Assert::that($name)->maxLength(255, 'Name is too long.');
 
         $this->name = $name;
     }
@@ -138,7 +146,6 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     {
         $settings = [];
         foreach ($this->settingValues as $value) {
-            /** @psalm-suppress MixedAssignment */
             $settings[$value->getServerSetting()->getKey()] = $value->getValue();
         }
 
@@ -147,11 +154,11 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
 
     private function findSettingValue(ServerSetting $setting): ?ServerSettingValue
     {
-        /** @var ServerSettingValue|null */
-        return $this->settingValues->findFirst(function ($k, $value) use ($setting) {
-            /** @var ServerSettingValue $value */
-            return $value->getServerSetting() === $setting;
-        });
+        return $this->settingValues->findFirst(
+            function (int|string $k, ServerSettingValue $value) use ($setting): bool {
+                return $value->getServerSetting() === $setting;
+            }
+        );
     }
 
     public function getSettingValue(ServerSetting $serverSetting): mixed
@@ -163,6 +170,13 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
 
     public function setSetting(ServerSetting $serverSetting, mixed $value): void
     {
+        Assert::that($value)->scalar('Value must be scalar.');
+        Assert::that(\gettype($value))
+            ->eq(
+                $serverSetting->getType(),
+                \sprintf('Value for setting %s is not of type %s.', $serverSetting->getKey(), $serverSetting->getType())
+            );
+
         $settingValue = $this->findSettingValue($serverSetting);
 
         if ($settingValue) {
@@ -178,9 +192,11 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     {
         $settingValue = $this->findSettingValue($serverSetting);
 
-        if (!$settingValue instanceof ServerSettingValue) {
-            throw new \InvalidArgumentException('Could not find value for setting '.$serverSetting->getKey());
-        }
+        Assert::that($settingValue)
+            ->isInstanceOf(
+                ServerSettingValue::class,
+                \sprintf('Could not find value for setting %s.', $serverSetting->getKey())
+            );
 
         $this->settingValues->removeElement($settingValue);
     }
@@ -190,6 +206,8 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         User $owner,
     ): self {
         $self = new self($name, $owner);
+
+        $self->addUser($owner);
 
         $self->record(new ServerCreatedEvent(
             $self->id,

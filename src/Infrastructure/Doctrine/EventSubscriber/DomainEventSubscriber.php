@@ -7,8 +7,6 @@ namespace App\Infrastructure\Doctrine\EventSubscriber;
 use App\Core\Domain\Shared\ContainsEventsInterface;
 use App\Core\Domain\Shared\EventInterface;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
@@ -26,15 +24,14 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 final class DomainEventSubscriber
 {
     /**
-     * @var ArrayCollection<array-key, ContainsEventsInterface>
+     * @var array<array-key, ContainsEventsInterface>
      */
-    private Collection $entities;
+    private array $entities = [];
 
     public function __construct(
         private EventDispatcherInterface $eventDispatcher,
         private EntityManagerInterface $entityManager,
     ) {
-        $this->entities = new ArrayCollection();
     }
 
     public function prePersist(PrePersistEventArgs $args): void
@@ -59,7 +56,7 @@ final class DomainEventSubscriber
     {
         $entity = $args->getObject();
         if ($entity instanceof ContainsEventsInterface) {
-            $this->entities->add($entity);
+            $this->entities[] = $entity;
         }
     }
 
@@ -71,7 +68,7 @@ final class DomainEventSubscriber
             }
             /** @var ContainsEventsInterface $entity */
             foreach ($entities as $entity) {
-                $this->entities->add($entity);
+                $this->entities[] = $entity;
             }
         }
     }
@@ -79,15 +76,16 @@ final class DomainEventSubscriber
     public function postFlush(): void
     {
         /**
-         * @var ArrayCollection<array-key, EventInterface>
+         * @var array<array-key, EventInterface>
          */
-        $events = new ArrayCollection();
+        $events = [];
         foreach ($this->entities as $entity) {
             foreach ($entity->getRecordedEvents() as $domainEvent) {
-                $events->add($domainEvent);
+                $events[] = $domainEvent;
             }
             $entity->clearRecordedEvents();
         }
+
         foreach ($events as $event) {
             $this->eventDispatcher->dispatch($event, $event::class);
         }

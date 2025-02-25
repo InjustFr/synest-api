@@ -6,6 +6,7 @@ namespace App\Presentation\Security;
 
 use App\Core\Application\Query\FindUserByEmailInterface;
 use App\Presentation\Security\Model\User;
+use Assert\Assert;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -21,10 +22,12 @@ final class UserProvider implements UserProviderInterface
 
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
+        Assert::that($identifier)->email('Identifier must be a valid email.');
+
         $entityUser = $this->findUserByEmail->execute($identifier);
 
         if (!$entityUser) {
-            throw new UserNotFoundException('User with identifier '.$identifier.' could not be found.');
+            throw new UserNotFoundException(\sprintf('User with identifier %s could not be found.', $identifier));
         }
 
         return User::createFromEntity($entityUser);

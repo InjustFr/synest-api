@@ -11,6 +11,7 @@ use App\Core\Domain\DTO\ServerDTO;
 use App\Core\Domain\DTO\ServerSettingValueDTO;
 use App\Core\Domain\Entity\Server;
 use App\Presentation\Security\Model\User;
+use Assert\Assert;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -44,8 +45,6 @@ final class ServerController extends AbstractController
             $user->entity
         );
 
-        $server->addUser($user->entity);
-
         $serverRepository->save($server);
 
         return $this->json($server, Response::HTTP_CREATED, context: ['groups' => 'server']);
@@ -63,6 +62,8 @@ final class ServerController extends AbstractController
         }
 
         $server->addUser($user->entity);
+        Assert::that($user->entity)
+            ->inArray($server->getUsers(), 'Could not add user to server.');
         $serverRepository->save($server);
 
         return $this->json([], Response::HTTP_NO_CONTENT);
@@ -80,6 +81,8 @@ final class ServerController extends AbstractController
         }
 
         $server->removeUser($user->entity);
+        Assert::that($user->entity)
+            ->notInArray($server->getUsers(), 'Could not remove user from server.');
         $serverRepository->save($server);
 
         return $this->json([], Response::HTTP_NO_CONTENT);

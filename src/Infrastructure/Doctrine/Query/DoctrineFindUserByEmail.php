@@ -28,9 +28,9 @@ final class DoctrineFindUserByEmail implements FindUserByEmailInterface
 
         $user = $qb->getQuery()->getOneOrNullResult();
 
-        if (null !== $user && !$user instanceof User) {
-            throw new \LogicException('Query did not return expected User or null type.');
-        }
+        Assert::that($user)
+            ->nullOr()
+            ->isInstanceOf(User::class, 'Query did not return expected ServerSetting or null type.');
 
         return $user;
     }

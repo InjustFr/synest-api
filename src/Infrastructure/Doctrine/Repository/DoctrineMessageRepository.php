@@ -6,20 +6,16 @@ namespace App\Infrastructure\Doctrine\Repository;
 
 use App\Core\Application\Repository\MessageRepositoryInterface;
 use App\Core\Domain\Entity\Message;
+use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\ORM\UnitOfWork;
 use Symfony\Component\Uid\Ulid;
 
 final class DoctrineMessageRepository implements MessageRepositoryInterface
 {
-    /**
-     * @var ObjectRepository<Message>
-     */
-    private ObjectRepository $objectRepository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-        $this->objectRepository = $entityManager->getRepository(Message::class);
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -27,16 +23,27 @@ final class DoctrineMessageRepository implements MessageRepositoryInterface
      */
     public function list(): array
     {
-        return $this->objectRepository->findAll();
+        $messages = $this->entityManager->createQueryBuilder()
+            ->select('c')
+            ->from(Message::class, 'c')
+            ->getQuery()
+            ->getResult();
+
+        Assert::that($messages)
+            ->all()
+            ->isInstanceOf(Message::class, \sprintf('Returned array is not composed of only %s', Message::class));
+
+        return iterator_to_array($messages);
     }
 
     public function get(Ulid $id): Message
     {
-        $message = $this->objectRepository->find($id);
+        $message = $this->entityManager->find(Message::class, $id);
 
-        if (!$message) {
-            throw new \InvalidArgumentException('ULID '.$id.' is not a valid message ULID');
-        }
+        Assert::that($message)
+            ->isInstanceOf(Message::class, \sprintf('Could not find message for ULID %s', $id));
+        Assert::that($message->getId())
+            ->eq($id, \sprintf('Wrong object returned for class %s', Message::class));
 
         return $message;
     }
@@ -44,10 +51,20 @@ final class DoctrineMessageRepository implements MessageRepositoryInterface
     public function save(Message $message): void
     {
         $this->entityManager->persist($message);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($message))
+            ->eq(
+                UnitOfWork::STATE_MANAGED,
+                \sprintf('Could not persist %s with id %s', Message::class, $message->getId())
+            );
     }
 
     public function delete(Message $message): void
     {
         $this->entityManager->remove($message);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($message))
+            ->eq(
+                UnitOfWork::STATE_REMOVED,
+                \sprintf('Could not remove %s with id %s', Message::class, $message->getId())
+            );
     }
 }

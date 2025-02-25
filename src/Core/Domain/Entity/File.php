@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Domain\Entity;
 
+use App\Infrastructure\Doctrine\Type\NonEmptyStringType;
+use Assert\Assert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
@@ -15,7 +17,10 @@ class File
     #[ORM\Column(type: UlidType::NAME)]
     private Ulid $id;
 
-    #[ORM\Column]
+    /**
+     * @var non-empty-string
+     */
+    #[ORM\Column(type: NonEmptyStringType::TYPE)]
     private string $path;
 
     #[ORM\ManyToOne(User::class)]
@@ -29,6 +34,9 @@ class File
         string $path,
         User $user,
     ) {
+        Assert::that($path)->notBlank('Path can not be blank.');
+        Assert::that($path)->maxLength(255, 'Path is too long.');
+
         $this->id = new Ulid();
 
         $this->path = $path;

@@ -32,9 +32,10 @@ class ServerSettingValue
         Server $server,
         mixed $value,
     ) {
-        Assert::that($value)->satisfy(function (mixed $value) use ($serverSetting) {
-            return \gettype($value) === $serverSetting->getType();
-        }, \sprintf('Value is not of type %s', $serverSetting->getType()));
+        Assert::that(\gettype($value))->eq(
+            $serverSetting->getType(),
+            \sprintf('Value must be of type %s', $serverSetting->getType())
+        );
 
         $this->id = new Ulid();
         $this->serverSetting = $serverSetting;
@@ -59,14 +60,23 @@ class ServerSettingValue
 
     public function getValue(): mixed
     {
-        return json_decode($this->value);
+        $value = json_decode($this->value, true);
+
+        Assert::that(json_last_error())->eq(\JSON_ERROR_NONE, 'Could not decode JSON value.');
+        Assert::that(\gettype($value))->eq(
+            $this->serverSetting->getType(),
+            \sprintf('Decode value is not of type %s', $this->serverSetting->getType())
+        );
+
+        return $value;
     }
 
     public function setValue(mixed $value): void
     {
-        Assert::that($value)->satisfy(function (mixed $value) {
-            return \gettype($value) === $this->serverSetting->getType();
-        }, \sprintf('Value is not of type %s', $this->serverSetting->getType()));
+        Assert::that(\gettype($value))->eq(
+            $this->serverSetting->getType(),
+            \sprintf('Value must be of type %s.', $this->serverSetting->getType())
+        );
 
         $this->value = json_encode($value) ?: '';
     }

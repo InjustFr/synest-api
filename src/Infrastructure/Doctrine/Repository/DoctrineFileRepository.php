@@ -6,20 +6,16 @@ namespace App\Infrastructure\Doctrine\Repository;
 
 use App\Core\Application\Repository\FileRepositoryInterface;
 use App\Core\Domain\Entity\File;
+use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\ORM\UnitOfWork;
 use Symfony\Component\Uid\Ulid;
 
 final class DoctrineFileRepository implements FileRepositoryInterface
 {
-    /**
-     * @var ObjectRepository<File>
-     */
-    private ObjectRepository $objectRepository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-        $this->objectRepository = $entityManager->getRepository(File::class);
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -27,16 +23,27 @@ final class DoctrineFileRepository implements FileRepositoryInterface
      */
     public function list(): array
     {
-        return $this->objectRepository->findAll();
+        $files = $this->entityManager->createQueryBuilder()
+            ->select('c')
+            ->from(File::class, 'c')
+            ->getQuery()
+            ->getResult();
+
+        Assert::that($files)
+            ->all()
+            ->isInstanceOf(File::class, \sprintf('Returned array is not composed of only %s', File::class));
+
+        return iterator_to_array($files);
     }
 
     public function get(Ulid $id): File
     {
-        $file = $this->objectRepository->find($id);
+        $file = $this->entityManager->find(File::class, $id);
 
-        if (!$file) {
-            throw new \InvalidArgumentException('ULID '.$id.' is not a valid file ULID');
-        }
+        Assert::that($file)
+            ->isInstanceOf(File::class, \sprintf('Could not find file for ULID %s', $id));
+        Assert::that($file->getId())
+            ->eq($id, \sprintf('Wrong object returned for class %s', File::class));
 
         return $file;
     }
@@ -44,10 +51,20 @@ final class DoctrineFileRepository implements FileRepositoryInterface
     public function save(File $file): void
     {
         $this->entityManager->persist($file);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($file))
+            ->eq(
+                UnitOfWork::STATE_MANAGED,
+                \sprintf('Could not persist %s with id %s', File::class, $file->getId())
+            );
     }
 
     public function delete(File $file): void
     {
         $this->entityManager->remove($file);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($file))
+            ->eq(
+                UnitOfWork::STATE_REMOVED,
+                \sprintf('Could not remove %s with id %s', File::class, $file->getId())
+            );
     }
 }

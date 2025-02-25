@@ -7,6 +7,7 @@ namespace App\Presentation\Subscriber;
 use App\Core\Domain\Event\ChannelCreatedEvent;
 use App\Core\Domain\Event\ChannelDeletedEvent;
 use App\Core\Domain\Event\MessageCreatedEvent;
+use Assert\Assert;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
@@ -17,7 +18,7 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
     {
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             MessageCreatedEvent::class => ['onMessageCreated', 10],
@@ -28,12 +29,16 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
 
     public function onMessageCreated(MessageCreatedEvent $messageCreatedEvent): void
     {
+        $data = json_encode([
+            'type' => 'message_created',
+            'data' => $messageCreatedEvent,
+        ]);
+
+        Assert::that($data)->string('Could not format update payload.');
+
         $update = new Update(
-            '/server/'.$messageCreatedEvent->server,
-            json_encode([
-                'type' => 'message_created',
-                'data' => $messageCreatedEvent,
-            ]) ?: ''
+            \sprintf('/server/%s', $messageCreatedEvent->server),
+            $data
         );
 
         $this->hub->publish($update);
@@ -41,12 +46,16 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
 
     public function onChannelCreated(ChannelCreatedEvent $channelCreatedEvent): void
     {
+        $data = json_encode([
+            'type' => 'channel_created',
+            'data' => $channelCreatedEvent,
+        ]);
+
+        Assert::that($data)->string('Could not format update payload.');
+
         $update = new Update(
-            '/server/'.$channelCreatedEvent->server,
-            json_encode([
-                'type' => 'channel_created',
-                'data' => $channelCreatedEvent,
-            ]) ?: ''
+            \sprintf('/server/%s', $channelCreatedEvent->server),
+            $data
         );
 
         $this->hub->publish($update);
@@ -54,12 +63,16 @@ final class ServerUpdateSubscriber implements EventSubscriberInterface
 
     public function onChannelDeleted(ChannelDeletedEvent $channelDeletedEvent): void
     {
+        $data = json_encode([
+            'type' => 'channel_deleted',
+            'data' => $channelDeletedEvent,
+        ]);
+
+        Assert::that($data)->string('Could not format update payload.');
+
         $update = new Update(
-            '/server/'.$channelDeletedEvent->server,
-            json_encode([
-                'type' => 'channel_deleted',
-                'data' => $channelDeletedEvent,
-            ]) ?: ''
+            \sprintf('/server/%s', $channelDeletedEvent->server),
+            $data
         );
 
         $this->hub->publish($update);

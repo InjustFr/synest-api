@@ -9,6 +9,7 @@ use App\Core\Domain\Shared\ChannelType;
 use App\Core\Domain\Shared\ContainsEventsInterface;
 use App\Core\Domain\Shared\PrivateEventRecorderTrait;
 use App\Core\Domain\Shared\RecordsEventsInterface;
+use App\Infrastructure\Doctrine\Type\NonEmptyStringType;
 use Assert\Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,10 +26,13 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
     #[ORM\Column(type: UlidType::NAME)]
     private Ulid $id;
 
-    #[ORM\Column]
+    /**
+     * @var non-empty-string
+     */
+    #[ORM\Column(type: NonEmptyStringType::TYPE)]
     private string $name;
 
-    #[ORM\Column(type: 'string', enumType: ChannelType::class)]
+    #[ORM\Column(type: NonEmptyStringType::TYPE, enumType: ChannelType::class)]
     private ChannelType $type;
 
     #[ORM\ManyToOne(Server::class, inversedBy: 'channels')]
@@ -47,6 +51,7 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
         Server $server,
     ) {
         Assert::that($name)->notBlank('Name can not be blank');
+        Assert::that($name)->maxLength(255, 'Name is too long');
 
         $this->id = new Ulid();
         $this->name = $name;
@@ -69,6 +74,8 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
     public function setName(string $name): void
     {
         Assert::that($name)->notBlank('Name can not be blank');
+        Assert::that($name)->maxLength(255, 'Name is too long');
+
         $this->name = $name;
     }
 
@@ -97,6 +104,9 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
 
     public function removeMessage(Message $message): void
     {
+        Assert::that($this->messages->contains($message))
+            ->true(\sprintf('Can not remove a %s not present in collection', Message::class));
+
         $this->messages->removeElement($message);
     }
 

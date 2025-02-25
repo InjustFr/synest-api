@@ -6,20 +6,16 @@ namespace App\Infrastructure\Doctrine\Repository;
 
 use App\Core\Application\Repository\ChannelRepositoryInterface;
 use App\Core\Domain\Entity\Channel;
+use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\ORM\UnitOfWork;
 use Symfony\Component\Uid\Ulid;
 
 final class DoctrineChannelRepository implements ChannelRepositoryInterface
 {
-    /**
-     * @var ObjectRepository<Channel>
-     */
-    private ObjectRepository $objectRepository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-        $this->objectRepository = $entityManager->getRepository(Channel::class);
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -27,16 +23,27 @@ final class DoctrineChannelRepository implements ChannelRepositoryInterface
      */
     public function list(): array
     {
-        return $this->objectRepository->findAll();
+        $channels = $this->entityManager->createQueryBuilder()
+            ->select('c')
+            ->from(Channel::class, 'c')
+            ->getQuery()
+            ->getResult();
+
+        Assert::that($channels)
+            ->all()
+            ->isInstanceOf(Channel::class, \sprintf('Returned array is not composed of only %s', Channel::class));
+
+        return iterator_to_array($channels);
     }
 
     public function get(Ulid $id): Channel
     {
-        $channel = $this->objectRepository->find($id);
+        $channel = $this->entityManager->find(Channel::class, $id);
 
-        if (!$channel) {
-            throw new \InvalidArgumentException('ULID '.$id.' is not a valid channel ULID');
-        }
+        Assert::that($channel)
+            ->isInstanceOf(Channel::class, \sprintf('Could not find channel for ULID %s', $id));
+        Assert::that($channel->getId())
+            ->eq($id, \sprintf('Wrong object returned for class %s', Channel::class));
 
         return $channel;
     }
@@ -44,10 +51,20 @@ final class DoctrineChannelRepository implements ChannelRepositoryInterface
     public function save(Channel $channel): void
     {
         $this->entityManager->persist($channel);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($channel))
+            ->eq(
+                UnitOfWork::STATE_MANAGED,
+                \sprintf('Could not persist %s with id %s', Channel::class, $channel->getId())
+            );
     }
 
     public function delete(Channel $channel): void
     {
         $this->entityManager->remove($channel);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($channel))
+            ->eq(
+                UnitOfWork::STATE_REMOVED,
+                \sprintf('Could not remove %s with id %s', Channel::class, $channel->getId())
+            );
     }
 }

@@ -6,20 +6,16 @@ namespace App\Infrastructure\Doctrine\Repository;
 
 use App\Core\Application\Repository\ServerSettingRepositoryInterface;
 use App\Core\Domain\Entity\ServerSetting;
+use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\ORM\UnitOfWork;
 use Symfony\Component\Uid\Ulid;
 
 final class DoctrineServerSettingRepository implements ServerSettingRepositoryInterface
 {
-    /**
-     * @var ObjectRepository<ServerSetting>
-     */
-    private ObjectRepository $objectRepository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-        $this->objectRepository = $entityManager->getRepository(ServerSetting::class);
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -27,27 +23,48 @@ final class DoctrineServerSettingRepository implements ServerSettingRepositoryIn
      */
     public function list(): array
     {
-        return $this->objectRepository->findAll();
+        $serverSettings = $this->entityManager->createQueryBuilder()
+            ->select('c')
+            ->from(ServerSetting::class, 'c')
+            ->getQuery()
+            ->getResult();
+
+        Assert::that($serverSettings)
+            ->all()
+            ->isInstanceOf(ServerSetting::class, \sprintf('Returned array is not composed of only %s', ServerSetting::class));
+
+        return iterator_to_array($serverSettings);
     }
 
     public function get(Ulid $id): ServerSetting
     {
-        $serversetting = $this->objectRepository->find($id);
+        $serverSetting = $this->entityManager->find(ServerSetting::class, $id);
 
-        if (!$serversetting) {
-            throw new \InvalidArgumentException('ULID '.$id.' is not a valid serversetting ULID');
-        }
+        Assert::that($serverSetting)
+            ->isInstanceOf(ServerSetting::class, \sprintf('Could not find serverSetting for ULID %s', $id));
+        Assert::that($serverSetting->getId())
+            ->eq($id, \sprintf('Wrong object returned for class %s', ServerSetting::class));
 
-        return $serversetting;
+        return $serverSetting;
     }
 
     public function save(ServerSetting $serverSetting): void
     {
         $this->entityManager->persist($serverSetting);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($serverSetting))
+            ->eq(
+                UnitOfWork::STATE_MANAGED,
+                \sprintf('Could not persist %s with id %s', ServerSetting::class, $serverSetting->getId())
+            );
     }
 
     public function delete(ServerSetting $serverSetting): void
     {
         $this->entityManager->remove($serverSetting);
+        Assert::that($this->entityManager->getUnitOfWork()->getEntityState($serverSetting))
+            ->eq(
+                UnitOfWork::STATE_REMOVED,
+                \sprintf('Could not remove %s with id %s', ServerSetting::class, $serverSetting->getId())
+            );
     }
 }

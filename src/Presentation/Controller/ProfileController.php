@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Controller;
 
 use App\Presentation\Security\Model\User;
+use Assert\Assert;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,6 +42,9 @@ final class ProfileController extends AbstractController
         }
 
         $discovery->addLink($request);
+
+        Assert::that($request->attributes->get('_links', null))
+            ->notNull('Discovery link could not be added');
 
         return $this->json($user->entity->getServers(), Response::HTTP_OK, context: ['groups' => 'profile-server']);
     }

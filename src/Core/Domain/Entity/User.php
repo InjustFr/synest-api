@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Domain\Entity;
 
+use App\Infrastructure\Doctrine\Type\NonEmptyStringType;
 use Assert\Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,7 +26,7 @@ class User
     /**
      * @var non-empty-string
      */
-    #[ORM\Column]
+    #[ORM\Column(type: NonEmptyStringType::TYPE)]
     private string $email;
 
     #[ORM\Column]

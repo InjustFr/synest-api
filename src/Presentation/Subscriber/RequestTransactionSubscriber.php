@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Subscriber;
 
 use App\Core\Application\TransactionServiceInterface;
+use Assert\Assert;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -14,7 +15,7 @@ final class RequestTransactionSubscriber implements EventSubscriberInterface
     {
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::CONTROLLER => ['startTransaction', 10],
@@ -25,16 +26,22 @@ final class RequestTransactionSubscriber implements EventSubscriberInterface
 
     public function startTransaction(): void
     {
-        $this->transactionService->start();
+        $result = $this->transactionService->start();
+
+        Assert::that($result)->true('Transaction could not be started.');
     }
 
     public function commitTransaction(): void
     {
-        $this->transactionService->commit();
+        $result = $this->transactionService->commit();
+
+        Assert::that($result)->true('Transaction could not be commited.');
     }
 
     public function rollbackTransaction(): void
     {
-        $this->transactionService->rollback();
+        $result = $this->transactionService->rollback();
+
+        Assert::that($result)->true('Transaction could not be rollbacked.');
     }
 }

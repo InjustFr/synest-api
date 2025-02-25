@@ -7,6 +7,7 @@ namespace App\Presentation\Controller;
 use App\Core\Application\Repository\FileRepositoryInterface;
 use App\Core\Domain\Entity\File;
 use App\Presentation\Security\Model\User;
+use Assert\Assert;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -42,10 +43,15 @@ final class FileController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        Assert::that(file_exists($uploadedFile->getPathname()))
+            ->true(\sprintf('Could not find uploaded file "%s".', $uploadedFile->getPathname()));
+
         $safeFilename = $slugger->slug(pathinfo($uploadedFile->getClientOriginalName(), \PATHINFO_FILENAME));
         $newFilename = $safeFilename.'-'.uniqid().'.'.($uploadedFile->guessExtension() ?? '');
 
         $newFile = $uploadedFile->move($uploadDirectory, $newFilename);
+        Assert::that(file_exists($newFile->getPathname()))
+            ->true(\sprintf('Could not move file to "%s".', $newFile->getPathname()));
 
         $file = File::create($newFile->getPathname(), $user->entity);
         $fileRepository->save($file);
@@ -61,6 +67,9 @@ final class FileController extends AbstractController
         FileRepositoryInterface $fileRepository,
     ): Response {
         unlink($file->getPath());
+
+        Assert::that(file_exists($file->getPath()))
+            ->false(\sprintf('Could not delete file "%s".', $file->getPath()));
 
         $fileRepository->delete($file);
 

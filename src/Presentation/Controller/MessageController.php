@@ -8,12 +8,11 @@ use App\Core\Application\Repository\ChannelRepositoryInterface;
 use App\Core\Application\Repository\MessageRepositoryInterface;
 use App\Core\Domain\DTO\MessageDTO;
 use App\Core\Domain\Entity\Message;
+use Assert\Assert;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/messages', name: 'api_messages_')]
 final class MessageController extends AbstractController
@@ -21,9 +20,12 @@ final class MessageController extends AbstractController
     #[Route('/', name: 'list', methods: ['GET'])]
     public function listMessage(
         MessageRepositoryInterface $messageRepository,
-        SerializerInterface $serializer,
     ): Response {
-        return new JsonResponse($serializer->serialize($messageRepository->list(), 'json', ['groups' => 'message']), status: Response::HTTP_OK, json: true);
+        return $this->json(
+            $messageRepository->list(),
+            status: Response::HTTP_CREATED,
+            context: ['groups' => 'message']
+        );
     }
 
     #[Route('', name: 'add', methods: ['POST'])]
@@ -32,12 +34,23 @@ final class MessageController extends AbstractController
         MessageDTO $messageDTO,
         MessageRepositoryInterface $messageRepository,
         ChannelRepositoryInterface $channelRepository,
-        SerializerInterface $serializer,
     ): Response {
-        $message = Message::create($messageDTO->content, $messageDTO->username, $channelRepository->get($messageDTO->channel));
+        $channel = $channelRepository->get($messageDTO->channel);
+        $message = Message::create($messageDTO->content, $messageDTO->username, $channel);
+
+        Assert::that($message)
+            ->inArray(
+                $channel->getMessages(),
+                \sprintf('Could not add new message in channel %s.', $channel->getId())
+            );
+
         $messageRepository->save($message);
 
-        return new JsonResponse($serializer->serialize($message, 'json', ['groups' => 'message']), status: Response::HTTP_CREATED, json: true);
+        return $this->json(
+            $message,
+            status: Response::HTTP_CREATED,
+            context: ['groups' => 'message']
+        );
     }
 
     #[Route('', name: 'delete', methods: ['DELETE'])]
@@ -47,6 +60,6 @@ final class MessageController extends AbstractController
     ): Response {
         $messageRepository->delete($message);
 
-        return new JsonResponse([], status: Response::HTTP_NO_CONTENT);
+        return $this->json([], status: Response::HTTP_NO_CONTENT);
     }
 }

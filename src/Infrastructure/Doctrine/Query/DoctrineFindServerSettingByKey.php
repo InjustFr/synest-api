@@ -6,6 +6,7 @@ namespace App\Infrastructure\Doctrine\Query;
 
 use App\Core\Application\Query\FindServerSettingByKeyInterface;
 use App\Core\Domain\Entity\ServerSetting;
+use Assert\Assert;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrineFindServerSettingByKey implements FindServerSettingByKeyInterface
@@ -17,6 +18,8 @@ final class DoctrineFindServerSettingByKey implements FindServerSettingByKeyInte
 
     public function execute(string $key): ?ServerSetting
     {
+        Assert::that($key)->notBlank('Key can not be blank');
+
         $qb = $this->entityManager->createQueryBuilder()
             ->select('ss')
             ->from(ServerSetting::class, 'ss')
@@ -25,9 +28,9 @@ final class DoctrineFindServerSettingByKey implements FindServerSettingByKeyInte
 
         $serverSetting = $qb->getQuery()->getOneOrNullResult();
 
-        if (null !== $serverSetting && !$serverSetting instanceof ServerSetting) {
-            throw new \LogicException('Query did not return expected ServerSetting or null type.');
-        }
+        Assert::that($serverSetting)
+            ->nullOr()
+            ->isInstanceOf(ServerSetting::class, 'Query did not return expected ServerSetting or null type.');
 
         return $serverSetting;
     }

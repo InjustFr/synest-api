@@ -8,6 +8,7 @@ use App\Core\Application\Repository\UserRepositoryInterface;
 use App\Core\Domain\DTO\UserDTO;
 use App\Core\Domain\Entity\User as EntityUser;
 use App\Presentation\Security\Model\User;
+use Assert\Assert;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -26,7 +27,13 @@ final class RegistrationController extends AbstractController
         $userEntity = EntityUser::create($userDTO->email, $userDTO->username, 'temp');
         $user = User::createFromEntity($userEntity);
 
-        $userEntity->setPassword($userPasswordHasher->hashPassword($user, $userDTO->password));
+        $hashedPassword = $userPasswordHasher->hashPassword($user, $userDTO->password);
+        Assert::that($hashedPassword, 'Could not hash password')
+            ->notBlank()
+            ->notEq($userDTO->password);
+
+        $userEntity->setPassword($hashedPassword);
+        Assert::that($userEntity->getPassword())->notEq('temp', 'Could not set hashed password to user');
 
         $userRepository->save($userEntity);
 
