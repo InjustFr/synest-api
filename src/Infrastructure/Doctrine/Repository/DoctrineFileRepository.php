@@ -21,6 +21,7 @@ final class DoctrineFileRepository implements FileRepositoryInterface
     /**
      * @return File[]
      */
+    #[\Override]
     public function list(): array
     {
         $files = $this->entityManager->createQueryBuilder()
@@ -36,6 +37,7 @@ final class DoctrineFileRepository implements FileRepositoryInterface
         return iterator_to_array($files);
     }
 
+    #[\Override]
     public function get(Ulid $id): File
     {
         $file = $this->entityManager->find(File::class, $id);
@@ -48,6 +50,7 @@ final class DoctrineFileRepository implements FileRepositoryInterface
         return $file;
     }
 
+    #[\Override]
     public function save(File $file): void
     {
         $this->entityManager->persist($file);
@@ -58,6 +61,7 @@ final class DoctrineFileRepository implements FileRepositoryInterface
             );
     }
 
+    #[\Override]
     public function delete(File $file): void
     {
         $this->entityManager->remove($file);

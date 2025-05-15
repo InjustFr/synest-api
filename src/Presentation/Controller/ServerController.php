@@ -36,7 +36,7 @@ final class ServerController extends AbstractController
         ?User $user,
         ServerRepositoryInterface $serverRepository,
     ): Response {
-        if (!$user) {
+        if (null === $user) {
             throw $this->createAccessDeniedException();
         }
 
@@ -57,7 +57,7 @@ final class ServerController extends AbstractController
         ?User $user,
         ServerRepositoryInterface $serverRepository,
     ): Response {
-        if (!$user) {
+        if (null === $user) {
             throw $this->createAccessDeniedException();
         }
 
@@ -76,7 +76,7 @@ final class ServerController extends AbstractController
         ?User $user,
         ServerRepositoryInterface $serverRepository,
     ): Response {
-        if (!$user) {
+        if (null === $user) {
             throw $this->createAccessDeniedException();
         }
 
@@ -95,7 +95,7 @@ final class ServerController extends AbstractController
         ?User $user,
         ServerRepositoryInterface $serverRepository,
     ): Response {
-        if (!$user) {
+        if (null === $user) {
             throw $this->createAccessDeniedException();
         }
 
@@ -133,7 +133,7 @@ final class ServerController extends AbstractController
     ): Response {
         $serverSetting = $findServerSettingByKey->execute($settingKey);
 
-        if (!$serverSetting) {
+        if (null === $serverSetting) {
             throw $this->createNotFoundException();
         }
 

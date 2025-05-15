@@ -21,6 +21,7 @@ final class DoctrineMessageRepository implements MessageRepositoryInterface
     /**
      * @return Message[]
      */
+    #[\Override]
     public function list(): array
     {
         $messages = $this->entityManager->createQueryBuilder()
@@ -36,6 +37,7 @@ final class DoctrineMessageRepository implements MessageRepositoryInterface
         return iterator_to_array($messages);
     }
 
+    #[\Override]
     public function get(Ulid $id): Message
     {
         $message = $this->entityManager->find(Message::class, $id);
@@ -48,6 +50,7 @@ final class DoctrineMessageRepository implements MessageRepositoryInterface
         return $message;
     }
 
+    #[\Override]
     public function save(Message $message): void
     {
         $this->entityManager->persist($message);
@@ -58,6 +61,7 @@ final class DoctrineMessageRepository implements MessageRepositoryInterface
             );
     }
 
+    #[\Override]
     public function delete(Message $message): void
     {
         $this->entityManager->remove($message);

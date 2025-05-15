@@ -21,7 +21,7 @@ final class ProfileController extends AbstractController
         #[CurrentUser]
         ?User $user,
     ): Response {
-        if (!$user) {
+        if (null === $user) {
             throw $this->createAccessDeniedException();
         }
 
@@ -37,7 +37,7 @@ final class ProfileController extends AbstractController
         Request $request,
         Discovery $discovery,
     ): Response {
-        if (!$user) {
+        if (null === $user) {
             throw $this->createAccessDeniedException();
         }
 

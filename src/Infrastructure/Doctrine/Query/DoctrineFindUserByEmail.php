@@ -16,6 +16,7 @@ final class DoctrineFindUserByEmail implements FindUserByEmailInterface
     ) {
     }
 
+    #[\Override]
     public function execute(string $email): ?User
     {
         Assert::that($email)->email('Email is not valid');

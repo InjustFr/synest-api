@@ -16,6 +16,7 @@ final class DoctrineFindServerSettingByKey implements FindServerSettingByKeyInte
     ) {
     }
 
+    #[\Override]
     public function execute(string $key): ?ServerSetting
     {
         Assert::that($key)->notBlank('Key can not be blank');

@@ -14,6 +14,7 @@ final class DoctrineTransactionService implements TransactionServiceInterface
     {
     }
 
+    #[\Override]
     public function start(): bool
     {
         $result = $this->entityManager->getConnection()->beginTransaction();
@@ -26,6 +27,7 @@ final class DoctrineTransactionService implements TransactionServiceInterface
         return $result;
     }
 
+    #[\Override]
     public function commit(): bool
     {
         $result = true;
@@ -42,6 +44,7 @@ final class DoctrineTransactionService implements TransactionServiceInterface
         return $result;
     }
 
+    #[\Override]
     public function rollback(): bool
     {
         $result = true;

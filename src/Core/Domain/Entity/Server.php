@@ -165,7 +165,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     {
         $settingValue = $this->findSettingValue($serverSetting);
 
-        return $settingValue ? $settingValue->getValue() : $serverSetting->getDefaultValue();
+        return null !== $settingValue ? $settingValue->getValue() : $serverSetting->getDefaultValue();
     }
 
     public function setSetting(ServerSetting $serverSetting, mixed $value): void
@@ -179,7 +179,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
 
         $settingValue = $this->findSettingValue($serverSetting);
 
-        if ($settingValue) {
+        if (null !== $settingValue) {
             $settingValue->setValue($value);
 
             return;

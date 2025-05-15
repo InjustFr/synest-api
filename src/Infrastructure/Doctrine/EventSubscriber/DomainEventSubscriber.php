@@ -63,7 +63,7 @@ final class DomainEventSubscriber
     public function preFlush(): void
     {
         foreach ($this->entityManager->getUnitOfWork()->getIdentityMap() as $class => $entities) {
-            if (!\in_array(ContainsEventsInterface::class, class_implements($class), true)) {
+            if (!\in_array(ContainsEventsInterface::class, class_implements($class) ?: [], true)) {
                 continue;
             }
             /** @var ContainsEventsInterface $entity */

@@ -39,7 +39,7 @@ final class FileController extends AbstractController
         SluggerInterface $slugger,
         FileRepositoryInterface $fileRepository,
     ): Response {
-        if (!$user) {
+        if (null === $user) {
             throw $this->createAccessDeniedException();
         }
 

@@ -21,6 +21,7 @@ final class DoctrineServerSettingRepository implements ServerSettingRepositoryIn
     /**
      * @return ServerSetting[]
      */
+    #[\Override]
     public function list(): array
     {
         $serverSettings = $this->entityManager->createQueryBuilder()
@@ -36,6 +37,7 @@ final class DoctrineServerSettingRepository implements ServerSettingRepositoryIn
         return iterator_to_array($serverSettings);
     }
 
+    #[\Override]
     public function get(Ulid $id): ServerSetting
     {
         $serverSetting = $this->entityManager->find(ServerSetting::class, $id);
@@ -48,6 +50,7 @@ final class DoctrineServerSettingRepository implements ServerSettingRepositoryIn
         return $serverSetting;
     }
 
+    #[\Override]
     public function save(ServerSetting $serverSetting): void
     {
         $this->entityManager->persist($serverSetting);
@@ -58,6 +61,7 @@ final class DoctrineServerSettingRepository implements ServerSettingRepositoryIn
             );
     }
 
+    #[\Override]
     public function delete(ServerSetting $serverSetting): void
     {
         $this->entityManager->remove($serverSetting);

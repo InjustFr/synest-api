@@ -20,24 +20,27 @@ final class UserProvider implements UserProviderInterface
     {
     }
 
+    #[\Override]
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
         Assert::that($identifier)->email('Identifier must be a valid email.');
 
         $entityUser = $this->findUserByEmail->execute($identifier);
 
-        if (!$entityUser) {
+        if (null === $entityUser) {
             throw new UserNotFoundException(\sprintf('User with identifier %s could not be found.', $identifier));
         }
 
         return User::createFromEntity($entityUser);
     }
 
+    #[\Override]
     public function refreshUser(UserInterface $user): UserInterface
     {
         throw new \LogicException('Can not refresh user in stateless app');
     }
 
+    #[\Override]
     public function supportsClass(string $class): bool
     {
         return User::class === $class;

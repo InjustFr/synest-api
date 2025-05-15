@@ -21,6 +21,7 @@ final class DoctrineChannelRepository implements ChannelRepositoryInterface
     /**
      * @return Channel[]
      */
+    #[\Override]
     public function list(): array
     {
         $channels = $this->entityManager->createQueryBuilder()
@@ -36,6 +37,7 @@ final class DoctrineChannelRepository implements ChannelRepositoryInterface
         return iterator_to_array($channels);
     }
 
+    #[\Override]
     public function get(Ulid $id): Channel
     {
         $channel = $this->entityManager->find(Channel::class, $id);
@@ -48,6 +50,7 @@ final class DoctrineChannelRepository implements ChannelRepositoryInterface
         return $channel;
     }
 
+    #[\Override]
     public function save(Channel $channel): void
     {
         $this->entityManager->persist($channel);
@@ -58,6 +61,7 @@ final class DoctrineChannelRepository implements ChannelRepositoryInterface
             );
     }
 
+    #[\Override]
     public function delete(Channel $channel): void
     {
         $this->entityManager->remove($channel);

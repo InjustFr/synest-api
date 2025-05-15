@@ -14,21 +14,25 @@ final readonly class User implements UserInterface, PasswordAuthenticatedUserInt
     {
     }
 
+    #[\Override]
     public function getRoles(): array
     {
         return $this->entity->getRoles();
     }
 
+    #[\Override]
     public function getUserIdentifier(): string
     {
         return $this->entity->getEmail();
     }
 
+    #[\Override]
     public function getPassword(): string
     {
         return $this->entity->getPassword();
     }
 
+    #[\Override]
     public function eraseCredentials(): void
     {
     }

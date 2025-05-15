@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e750fdd49bf59f2e70395e80f3a0496",
+    "content-hash": "acbe52b22b85930e32fc3c17bda7c167",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -6822,16 +6822,16 @@
         },
         {
             "name": "phpstan/phpstan-beberlei-assert",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-beberlei-assert.git",
-                "reference": "4a1667f7266046774556381a107356fdcd56a09a"
+                "reference": "24bd4c7e37568dec556c039c55ef04e3ecafa98d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-beberlei-assert/zipball/4a1667f7266046774556381a107356fdcd56a09a",
-                "reference": "4a1667f7266046774556381a107356fdcd56a09a",
+                "url": "https://api.github.com/repos/phpstan/phpstan-beberlei-assert/zipball/24bd4c7e37568dec556c039c55ef04e3ecafa98d",
+                "reference": "24bd4c7e37568dec556c039c55ef04e3ecafa98d",
                 "shasum": ""
             },
             "require": {
@@ -6865,9 +6865,9 @@
             "description": "PHPStan beberlei/assert extension",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-beberlei-assert/issues",
-                "source": "https://github.com/phpstan/phpstan-beberlei-assert/tree/2.0.0"
+                "source": "https://github.com/phpstan/phpstan-beberlei-assert/tree/2.0.1"
             },
-            "time": "2024-10-14T03:46:45+00:00"
+            "time": "2025-05-05T15:51:52+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -6939,6 +6939,54 @@
                 "source": "https://github.com/phpstan/phpstan-doctrine/tree/2.0.1"
             },
             "time": "2024-12-02T16:48:00+00:00"
+        },
+        {
+            "name": "phpstan/phpstan-strict-rules",
+            "version": "2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan-strict-rules.git",
+                "reference": "3e139cbe67fafa3588e1dbe27ca50f31fdb6236a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/3e139cbe67fafa3588e1dbe27ca50f31fdb6236a",
+                "reference": "3e139cbe67fafa3588e1dbe27ca50f31fdb6236a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpstan": "^2.0.4"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Extra strict and opinionated rules for PHPStan",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.4"
+            },
+            "time": "2025-03-18T11:42:40+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",

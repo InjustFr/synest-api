@@ -7,6 +7,7 @@ namespace App\Infrastructure\Doctrine\Repository;
 use App\Core\Application\Repository\ServerRepositoryInterface;
 use App\Core\Domain\Entity\Server;
 use Assert\Assert;
+use Assert\Assertion;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use Symfony\Component\Uid\Ulid;
@@ -21,6 +22,7 @@ final class DoctrineServerRepository implements ServerRepositoryInterface
     /**
      * @return Server[]
      */
+    #[\Override]
     public function list(): array
     {
         $servers = $this->entityManager->createQueryBuilder()
@@ -29,13 +31,15 @@ final class DoctrineServerRepository implements ServerRepositoryInterface
             ->getQuery()
             ->getResult();
 
+        Assertion::isArray($servers, 'Could not get a array of servers from database');
         Assert::that($servers)
             ->all()
             ->isInstanceOf(Server::class, \sprintf('Returned array is not composed of only %s', Server::class));
 
-        return iterator_to_array($servers);
+        return $servers;
     }
 
+    #[\Override]
     public function get(Ulid $id): Server
     {
         $server = $this->entityManager->find(Server::class, $id);
@@ -48,6 +52,7 @@ final class DoctrineServerRepository implements ServerRepositoryInterface
         return $server;
     }
 
+    #[\Override]
     public function save(Server $server): void
     {
         $this->entityManager->persist($server);
@@ -58,6 +63,7 @@ final class DoctrineServerRepository implements ServerRepositoryInterface
             );
     }
 
+    #[\Override]
     public function delete(Server $server): void
     {
         $this->entityManager->remove($server);

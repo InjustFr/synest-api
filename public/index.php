@@ -10,7 +10,7 @@ return function (array $context) {
     /**
      * @var string $env
      */
-    $env = $context['APP_ENV'];
+    $env = $context['APP_ENV'] ?? 'dev';
 
-    return new Kernel($env, (bool) $context['APP_DEBUG']);
+    return new Kernel($env, (bool) ($context['APP_DEBUG'] ?? true));
 };
