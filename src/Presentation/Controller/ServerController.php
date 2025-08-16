@@ -61,7 +61,7 @@ final class ServerController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $server->addUser($user->entity);
+        $server->subscribeUser($user->entity);
         Assert::that($user->entity)
             ->inArray($server->getUsers(), 'Could not add user to server.');
         $serverRepository->save($server);
@@ -80,7 +80,7 @@ final class ServerController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $server->removeUser($user->entity);
+        $server->unsubscribeUser($user->entity);
         Assert::that($user->entity)
             ->notInArray($server->getUsers(), 'Could not remove user from server.');
         $serverRepository->save($server);
@@ -137,7 +137,7 @@ final class ServerController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $server->setSetting($serverSetting, $serverSettingValueDTO->value);
+        $server->changeSetting($serverSetting, $serverSettingValueDTO->value);
 
         $serverRepository->save($server);
 

@@ -36,7 +36,7 @@ class Message implements RecordsEventsInterface, ContainsEventsInterface
     #[ORM\Column(type: NonEmptyStringType::TYPE)]
     private string $username;
 
-    #[ORM\ManyToOne(Channel::class, inversedBy: 'messages')]
+    #[ORM\ManyToOne(Channel::class)]
     #[ORM\JoinColumn(nullable: false)]
     private readonly Channel $channel;
 
@@ -65,24 +65,9 @@ class Message implements RecordsEventsInterface, ContainsEventsInterface
         return $this->content;
     }
 
-    public function setContent(string $content): void
-    {
-        Assert::that($content)->notBlank('Content can not be blank.');
-
-        $this->content = $content;
-    }
-
     public function getUsername(): string
     {
         return $this->username;
-    }
-
-    public function setUsername(string $username): void
-    {
-        Assert::that($username)->notBlank('Username can not be blank.');
-        Assert::that($username)->maxLength(255, 'Username is too long.');
-
-        $this->username = $username;
     }
 
     public function getChannel(): Channel
@@ -93,7 +78,6 @@ class Message implements RecordsEventsInterface, ContainsEventsInterface
     public static function create(string $content, string $username, Channel $channel): self
     {
         $self = new self($content, $username, $channel);
-        $channel->addMessage($self);
 
         $self->record(new MessageCreatedEvent($self->id, $content, $username, $channel->getId(), $channel->getServer()->getId()));
 

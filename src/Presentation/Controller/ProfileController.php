@@ -41,7 +41,7 @@ final class ProfileController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $discovery->addLink($request);
+        $discovery->addLink($request, 'default');
 
         Assert::that($request->attributes->get('_links', null))
             ->notNull('Discovery link could not be added');

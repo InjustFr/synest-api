@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Domain\Entity;
 
 use App\Core\Domain\Event\ServerCreatedEvent;
+use App\Core\Domain\Shared\Assertion;
 use App\Core\Domain\Shared\ContainsEventsInterface;
 use App\Core\Domain\Shared\PrivateEventRecorderTrait;
 use App\Core\Domain\Shared\RecordsEventsInterface;
@@ -37,12 +38,6 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     private User $owner;
 
     /**
-     * @var ArrayCollection<array-key, Channel>
-     */
-    #[ORM\OneToMany(Channel::class, mappedBy: 'server', cascade: ['remove', 'persist'], orphanRemoval: true)]
-    private Collection $channels;
-
-    /**
      * @var ArrayCollection<array-key, User>
      */
     #[ORM\ManyToMany(User::class, mappedBy: 'servers', cascade: ['persist'])]
@@ -63,7 +58,6 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         $this->name = $name;
         $this->owner = $owner;
 
-        $this->channels = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->settingValues = new ArrayCollection();
     }
@@ -78,7 +72,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function rename(string $name): void
     {
         Assert::that($name)->notBlank('Name can not be blank');
         Assert::that($name)->maxLength(255, 'Name is too long.');
@@ -91,27 +85,11 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         return $this->owner;
     }
 
-    public function setOwner(User $owner): void
+    public function changeOwner(User $owner): void
     {
+        Assertion::inArray($owner, $this->users->toArray(), 'Could not find new owner in subscribed users');
+
         $this->owner = $owner;
-    }
-
-    /**
-     * @return Channel[]
-     */
-    public function getChannels(): array
-    {
-        return $this->channels->toArray();
-    }
-
-    public function addChannel(Channel $channel): void
-    {
-        $this->channels[] = $channel;
-    }
-
-    public function removeChannel(Channel $channel): void
-    {
-        $this->channels->removeElement($channel);
     }
 
     /**
@@ -122,7 +100,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         return $this->users->toArray();
     }
 
-    public function addUser(User $user): void
+    public function subscribeUser(User $user): void
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
@@ -130,7 +108,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         }
     }
 
-    public function removeUser(User $user): void
+    public function unsubscribeUser(User $user): void
     {
         Assert::that($user)->notEq($this->owner, 'Can\'t remove a user from a server they own');
 
@@ -155,9 +133,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     private function findSettingValue(ServerSetting $setting): ?ServerSettingValue
     {
         return $this->settingValues->findFirst(
-            function (int|string $k, ServerSettingValue $value) use ($setting): bool {
-                return $value->getServerSetting() === $setting;
-            }
+            fn (int|string $k, ServerSettingValue $value): bool => $value->getServerSetting() === $setting
         );
     }
 
@@ -168,7 +144,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         return null !== $settingValue ? $settingValue->getValue() : $serverSetting->getDefaultValue();
     }
 
-    public function setSetting(ServerSetting $serverSetting, mixed $value): void
+    public function changeSetting(ServerSetting $serverSetting, mixed $value): void
     {
         Assert::that($value)->scalar('Value must be scalar.');
         Assert::that(\gettype($value))
@@ -180,7 +156,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         $settingValue = $this->findSettingValue($serverSetting);
 
         if (null !== $settingValue) {
-            $settingValue->setValue($value);
+            $settingValue->changeValue($value);
 
             return;
         }
@@ -188,15 +164,11 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
         $this->settingValues[] = ServerSettingValue::create($serverSetting, $this, $value);
     }
 
-    public function removeSettingValue(ServerSetting $serverSetting): void
+    public function resetSettingToDefault(ServerSetting $serverSetting): void
     {
         $settingValue = $this->findSettingValue($serverSetting);
 
-        Assert::that($settingValue)
-            ->isInstanceOf(
-                ServerSettingValue::class,
-                \sprintf('Could not find value for setting %s.', $serverSetting->getKey())
-            );
+        Assertion::notNull($settingValue, 'Could not find value to remove');
 
         $this->settingValues->removeElement($settingValue);
     }
@@ -207,7 +179,7 @@ class Server implements RecordsEventsInterface, ContainsEventsInterface
     ): self {
         $self = new self($name, $owner);
 
-        $self->addUser($owner);
+        $self->subscribeUser($owner);
 
         $self->record(new ServerCreatedEvent(
             $self->id,

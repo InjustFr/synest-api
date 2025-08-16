@@ -71,7 +71,7 @@ class ServerSettingValue
         return $value;
     }
 
-    public function setValue(mixed $value): void
+    public function changeValue(mixed $value): void
     {
         Assert::that(\gettype($value))->eq(
             $this->serverSetting->getType(),

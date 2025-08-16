@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controller;
 
-use App\Core\Application\Repository\ServerRepositoryInterface;
+use App\Core\Application\Query\FindAllChannelsForServerInterface;
+use App\Core\Application\Repository\ChannelRepositoryInterface;
 use App\Core\Domain\DTO\ChannelDTO;
 use App\Core\Domain\Entity\Channel;
 use App\Core\Domain\Entity\Server;
@@ -21,8 +22,14 @@ final class ChannelController extends AbstractController
     #[Route('', name: 'list', methods: ['GET'])]
     public function listChannel(
         Server $server,
+        FindAllChannelsForServerInterface $findAllChannelsForServer,
     ): Response {
-        return $this->json($server->getChannels(), Response::HTTP_OK, context: ['groups' => 'channel']);
+
+        return $this->json(
+            $findAllChannelsForServer->execute($server),
+            Response::HTTP_OK,
+            context: ['groups' => 'channel']
+        );
     }
 
     #[Route('', name: 'add', methods: ['POST'])]
@@ -30,14 +37,11 @@ final class ChannelController extends AbstractController
         Server $server,
         #[MapRequestPayload]
         ChannelDTO $channelDTO,
-        ServerRepositoryInterface $serverRepository,
+        ChannelRepositoryInterface $channelRepository,
     ): Response {
         $channel = Channel::create($channelDTO->name, $channelDTO->type, $server);
-        $server->addChannel($channel);
 
-        Assert::that($channel)->inArray($server->getChannels(), 'Could not add channel to server.');
-
-        $serverRepository->save($server);
+        $channelRepository->save($channel);
 
         return $this->json($channel, Response::HTTP_OK, context: ['groups' => 'channel']);
     }
@@ -46,13 +50,9 @@ final class ChannelController extends AbstractController
     public function removeChannel(
         Server $server,
         Channel $channel,
-        ServerRepositoryInterface $serverRepository,
+        ChannelRepositoryInterface $channelRepository,
     ): Response {
-        Assert::that($channel)->inArray($server->getChannels(), 'Can not remove a channel from an unlinked server.');
-        $server->removeChannel($channel);
-        Assert::that($channel)->notInArray($server->getChannels(), 'Could not not remove a channel from server');
-
-        $serverRepository->save($server);
+        $channelRepository->delete($channel);
 
         $event = new ChannelDeletedEvent($channel->getId(), $server->getId());
         $channel->record($event);

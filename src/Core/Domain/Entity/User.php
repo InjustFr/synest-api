@@ -76,15 +76,12 @@ class User
     {
         if (!$this->servers->contains($server)) {
             $this->servers[] = $server;
-            $server->addUser($this);
         }
     }
 
     public function removeServer(Server $server): void
     {
-        if ($this->servers->removeElement($server)) {
-            $server->removeUser($this);
-        }
+        $this->servers->removeElement($server);
     }
 
     public function getId(): Ulid

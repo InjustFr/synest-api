@@ -78,28 +78,9 @@ class ServerSetting
         return $this->key;
     }
 
-    public function setKey(string $key): void
-    {
-        Assert::that($key)->notBlank('Key can not be blank.');
-        Assert::that($key)->maxLength(255, 'Key can not be longer than 255 characters.');
-
-        $this->key = $key;
-    }
-
     public function getType(): string
     {
         return $this->type;
-    }
-
-    public function setType(string $type): void
-    {
-        Assert::that($type)->notBlank('Type can not be blank.');
-        Assert::that($type)->inArray(
-            self::ALLOWED_TYPES,
-            \sprintf('Type must be one of the following types: [%s]', implode(',', self::ALLOWED_TYPES))
-        );
-
-        $this->type = $type;
     }
 
     public function getDescription(): string
@@ -107,7 +88,7 @@ class ServerSetting
         return $this->description;
     }
 
-    public function setDescription(string $description): void
+    public function updateDescription(string $description): void
     {
         Assert::that($description)->notBlank('Description can not be blank.');
 
@@ -124,7 +105,7 @@ class ServerSetting
         return $defaultValue;
     }
 
-    public function setDefaultValue(mixed $defaultValue): void
+    public function changeDefaultValue(mixed $defaultValue): void
     {
         Assert::that($defaultValue)->scalar('Default value must be a scalar.');
         Assert::that(\gettype($defaultValue))->eq(

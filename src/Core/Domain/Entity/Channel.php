@@ -11,8 +11,6 @@ use App\Core\Domain\Shared\PrivateEventRecorderTrait;
 use App\Core\Domain\Shared\RecordsEventsInterface;
 use App\Infrastructure\Doctrine\Type\NonEmptyStringType;
 use Assert\Assert;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
@@ -35,15 +33,9 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
     #[ORM\Column(type: NonEmptyStringType::TYPE, enumType: ChannelType::class)]
     private ChannelType $type;
 
-    #[ORM\ManyToOne(Server::class, inversedBy: 'channels')]
+    #[ORM\ManyToOne(Server::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Server $server;
-
-    /**
-     * @var ArrayCollection<array-key, Message>
-     */
-    #[ORM\OneToMany(Message::class, mappedBy: 'channel', cascade: ['remove', 'persist'], orphanRemoval: true)]
-    private Collection $messages;
 
     private function __construct(
         string $name,
@@ -57,8 +49,6 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
         $this->name = $name;
         $this->type = $type;
         $this->server = $server;
-
-        $this->messages = new ArrayCollection();
     }
 
     public function getId(): Ulid
@@ -71,7 +61,7 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function rename(string $name): void
     {
         Assert::that($name)->notBlank('Name can not be blank');
         Assert::that($name)->maxLength(255, 'Name is too long');
@@ -87,27 +77,6 @@ class Channel implements RecordsEventsInterface, ContainsEventsInterface
     public function getServer(): Server
     {
         return $this->server;
-    }
-
-    /**
-     * @return Message[]
-     */
-    public function getMessages(): array
-    {
-        return $this->messages->toArray();
-    }
-
-    public function addMessage(Message $message): void
-    {
-        $this->messages[] = $message;
-    }
-
-    public function removeMessage(Message $message): void
-    {
-        Assert::that($this->messages->contains($message))
-            ->true(\sprintf('Can not remove a %s not present in collection', Message::class));
-
-        $this->messages->removeElement($message);
     }
 
     public static function create(

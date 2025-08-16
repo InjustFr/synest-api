@@ -47,10 +47,8 @@ final class ServerSettingController extends AbstractController
         ServerSettingDTO $serverSettingDTO,
         ServerSettingRepositoryInterface $serverSettingRepository,
     ): Response {
-        $serverSetting->setKey($serverSettingDTO->key);
-        $serverSetting->setType($serverSettingDTO->type);
-        $serverSetting->setDescription($serverSettingDTO->description);
-        $serverSetting->setDefaultValue($serverSettingDTO->defaultValue);
+        $serverSetting->updateDescription($serverSettingDTO->description);
+        $serverSetting->changeDefaultValue($serverSettingDTO->defaultValue);
 
         $serverSettingRepository->save($serverSetting);
 
